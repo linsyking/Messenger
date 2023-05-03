@@ -60,7 +60,7 @@ class Messenger:
 
         dol0 = "\n".join([f"import Scenes.{l}.Export as {l}" for l in scenes])
 
-        dol1 = "\n    | ".join([f"{l}DT {l}.data" for l in scenes])
+        dol1 = "\n    | ".join([f"{l}DT {l}.Data" for l in scenes])
         with open(".messenger/Templates/scene/Scenes/SceneSettings.elm", "r") as f:
             content = f.read()
         content = content.replace("$0", dol0).replace("$1", dol1)
@@ -235,9 +235,9 @@ Press Enter to continue
 
     print("Creating elm.json...")
     initObject = {
-        "scenes": [],
-        "components": [],
-        "gamecomponents": [],
+        "scenes": {},
+        "components": {},
+        "gamecomponents": {},
     }
     with open("messenger.json", "w") as f:
         json.dump(initObject, f, indent=4, ensure_ascii=False)

@@ -51,6 +51,7 @@ Press Enter to continue
     shutil.copytree(".messenger/Templates/core/", "./src")
     shutil.copytree(".messenger/Templates/public/", "./public")
     shutil.copy(".messenger/Templates/.gitignore", "./.gitignore")
+    shutil.copy(".messenger/Templates/Makefile", "./Makefile")
     shutil.copy(".messenger/Templates/elm.json", "./elm.json")
 
     print("Creating elm.json...")

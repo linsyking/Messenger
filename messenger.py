@@ -8,6 +8,7 @@
 import typer
 import os
 import shutil
+import json
 
 app = typer.Typer(add_completion=False)
 
@@ -48,8 +49,22 @@ Press Enter to continue
         f"git clone https://github.com/linsyking/Messenger.git .messenger --depth=1"
     )
     shutil.copytree(".messenger/Templates/core/", "./src")
+    shutil.copytree(".messenger/Templates/public/", "./public")
     shutil.copy(".messenger/Templates/.gitignore", "./.gitignore")
     shutil.copy(".messenger/Templates/elm.json", "./elm.json")
+
+    print("Creating elm.json...")
+    initObject = {
+        "scenes": [],
+        "components": [],
+        "gamecomponents": [],
+    }
+    with open("messenger.json", "w") as f:
+        json.dump(initObject, f, indent=4, ensure_ascii=False)
+    print("Installing dependencies...")
+    os.system("elm make")
+    print("Done!")
+    print(f"Now please go to {name} and add scenes and components.")
 
 
 if __name__ == "__main__":

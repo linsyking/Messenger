@@ -1,0 +1,36 @@
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Main</title>
+  <script src="build/elm-canvas.js"></script>
+  <script src="build/elm-audio.js"></script>
+  <script src="build/main.js"></script>
+  <link rel="stylesheet" href="build/style.css">
+</head>
+
+<body oncontextmenu="return false;">
+  <div id="myapp"></div>
+  <script>
+    var app = Elm.Main.init({
+      node: document.getElementById('myapp'),
+      flags: {
+        windowWidth: window.innerWidth,
+        windowHeight: window.innerHeight,
+        info: localStorage.getItem("info") ? localStorage.getItem("info") : ""
+      }
+    });
+
+    app.ports.sendInfo.subscribe(function (m) {
+      localStorage.setItem("info", m);
+    });
+
+    app.ports.alert.subscribe(function (m) {
+      alert(m);
+    });
+
+    startAudio(app);
+  </script>
+</body>
+
+</html>

@@ -1,4 +1,4 @@
-module Scenes.Home.Layer1.Export exposing
+module Scenes.$0.$1.Export exposing
     ( Data
     , nullData
     , layer
@@ -14,11 +14,11 @@ module Scenes.Home.Layer1.Export exposing
 
 -}
 
+import Array
 import Lib.Layer.Base exposing (..)
-import Scenes.Home.Layer1.Common exposing (Model)
-import Scenes.Home.Layer1.Display exposing (dview)
-import Scenes.Home.Layer1.Models exposing (..)
-import Scenes.Home.LayerBase exposing (CommonData)
+import Scenes.$0.$1.Common exposing (Model)
+import Scenes.$0.$1.Models exposing (initModel, updateModel, viewModel)
+import Scenes.$0.LayerBase exposing (CommonData)
 
 
 {-| Data
@@ -31,8 +31,7 @@ type alias Data =
 -}
 nullData : Data
 nullData =
-    { start = initButton "Start" False ( 960, 40 ) 15 10
-    , continue = initButton "Start" False ( 960, 40 ) 15 10
+    { components = Array.empty
     }
 
 
@@ -43,5 +42,5 @@ layer =
     { data = nullData
     , init = initModel
     , update = updateModel
-    , view = dview
+    , view = viewModel
     }

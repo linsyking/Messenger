@@ -8,8 +8,7 @@ This module records all the scenes.
 
 -}
 
-import Scenes.Home.Export as H
-import Scenes.Home.Global as HG
+$0
 import Scenes.SceneSettings exposing (..)
 
 
@@ -18,5 +17,6 @@ Add all the scenes here
 -}
 allScenes : List ( String, SceneT )
 allScenes =
-    [ ( "Home", HG.sceneToST H.scene )
+    [
+        $1
     ]

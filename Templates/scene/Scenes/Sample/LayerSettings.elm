@@ -1,4 +1,4 @@
-module Scenes.Home.LayerSettings exposing
+module Scenes.$0.LayerSettings exposing
     ( LayerDataType(..)
     , LayerT
     )
@@ -7,25 +7,23 @@ module Scenes.Home.LayerSettings exposing
 
 @docs LayerDataType
 
-@docs LayerCT
+@docs LayerT
 
 -}
 
 import Lib.Layer.Base exposing (..)
-import Scenes.Home.Layer0.Export as L0
-import Scenes.Home.Layer1.Export as L1
-import Scenes.Home.LayerBase exposing (CommonData)
+import Scenes.$0.LayerBase exposing (CommonData)
+$1
 
 
 {-| LayerDataType
 -}
 type LayerDataType
-    = Layer0Data L0.Data
-    | Layer1Data L1.Data
+    = $2
     | NullLayerData
 
 
-{-| LayerCT
+{-| LayerT
 -}
 type alias LayerT =
     Layer CommonData LayerDataType

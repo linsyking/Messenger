@@ -1,10 +1,8 @@
-module Scenes.Home.Layer0.Common exposing (Model)
+module Scenes.$0.$1.Common exposing (Model)
 
 {-| This is the doc for this module
 
-@docs ModelX
-
-@docs SModel
+@docs Model
 
 -}
 
@@ -13,7 +11,7 @@ import Base exposing (..)
 import Lib.Component.Base exposing (Component)
 
 
-{-| ModelX
+{-| Model
 -}
 type alias Model =
     { components : Array Component

@@ -1,4 +1,4 @@
-module Scenes.Home.Export exposing
+module Scenes.$0.Export exposing
     ( Data
     , nullData
     , scene
@@ -15,9 +15,9 @@ module Scenes.Home.Export exposing
 -}
 
 import Lib.Scene.Base exposing (..)
-import Scenes.Home.Common exposing (Model)
-import Scenes.Home.LayerBase exposing (CommonData)
-import Scenes.Home.Model exposing (initModel, updateModel, viewModel)
+import Scenes.$0.Common exposing (Model)
+import Scenes.$0.LayerBase exposing (initCommonData)
+import Scenes.$0.Model exposing (initModel, updateModel, viewModel)
 
 
 {-| Data
@@ -30,7 +30,7 @@ type alias Data =
 -}
 nullData : Data
 nullData =
-    { commonData = CommonData False 0
+    { commonData = initCommonData
     , layers = []
     }
 

@@ -16,7 +16,7 @@ module Scenes.SceneSettings exposing
 import Base exposing (..)
 import Canvas exposing (group)
 import Lib.Scene.Base exposing (..)
-import Scenes.Home.Export as H
+$0
 
 
 
@@ -27,13 +27,9 @@ import Scenes.Home.Export as H
 
 All the scene data types should be listed here.
 
-`HdataT` is for Home Scene.
-
-`CoreEngineDataT` is for the Core Engine Scene.
-
 -}
 type SceneDataTypes
-    = HomeDataT H.Data
+    = $1
     | NullSceneData
 
 

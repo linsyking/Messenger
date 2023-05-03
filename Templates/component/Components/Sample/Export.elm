@@ -1,4 +1,4 @@
-module Components.B.Export exposing
+module Components.$0.Export exposing
     ( component
     , initComponent
     )
@@ -13,26 +13,19 @@ Console is a tool to load levels and enter commands.
 
 -}
 
-import Canvas exposing (group)
-import Components.B.B exposing (initModel, updateModel)
+import Components.$0.$0 exposing (initModel, updateModel, viewModel)
 import Lib.Component.Base exposing (Component, ComponentTMsg(..))
 
 
 {-| component
-name : Component Type
-data : the model for Console
-init : the init function for Console
-update : the update function for Console
-view : the view function for Console
-query : Console does not require query function
 -}
 component : Component
 component =
-    { name = "B"
+    { name = "$0"
     , data = initModel 0 0 NullComponentMsg
     , init = initModel
     , update = updateModel
-    , view = \_ _ -> group [] []
+    , view = viewModel
     }
 
 

@@ -1,4 +1,4 @@
-module Scenes.Home.Common exposing (Model)
+module Scenes.$0.Common exposing (Model)
 
 {-| This is the doc for this module
 
@@ -7,8 +7,8 @@ module Scenes.Home.Common exposing (Model)
 -}
 
 import Lib.Scene.Base exposing (LayerPacker)
-import Scenes.Home.LayerBase exposing (CommonData)
-import Scenes.Home.LayerSettings exposing (LayerT)
+import Scenes.$0.LayerBase exposing (CommonData)
+import Scenes.$0.LayerSettings exposing (LayerT)
 
 
 {-| Model

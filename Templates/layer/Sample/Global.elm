@@ -1,7 +1,7 @@
-module Scenes.Home.Layer1.Global exposing
-    ( dataToLDT
-    , getLayerT
-    , ldtToData
+module Scenes.$0.$1.Global exposing
+    ( dToCT
+    , ctTod
+    , getLayerCT
     )
 
 {-| This is the doc for this module
@@ -17,24 +17,24 @@ module Scenes.Home.Layer1.Global exposing
 import Base exposing (GlobalData, Msg)
 import Canvas exposing (Renderable)
 import Lib.Layer.Base exposing (..)
-import Scenes.Home.Layer1.Export exposing (Data, nullData)
-import Scenes.Home.LayerBase exposing (CommonData)
-import Scenes.Home.LayerSettings exposing (..)
+import Scenes.$0.$1.Export exposing (Data, nullData)
+import Scenes.$0.LayerBase exposing (CommonData)
+import Scenes.$0.LayerSettings exposing (..)
 
 
 {-| dToCT
 -}
-dataToLDT : Data -> LayerDataType
-dataToLDT data =
-    Layer1Data data
+dToCT : Data -> LayerDataType
+dToCT data =
+    $1Data data
 
 
 {-| ctTod
 -}
-ldtToData : LayerDataType -> Data
-ldtToData ldt =
+ctTod : LayerDataType -> Data
+ctTod ldt =
     case ldt of
-        Layer1Data x ->
+        $1Data x ->
             x
 
         _ ->
@@ -43,23 +43,23 @@ ldtToData ldt =
 
 {-| getLayerCT
 -}
-getLayerT : Layer CommonData Data -> LayerT
-getLayerT layer =
+getLayerCT : Layer CommonData Data -> LayerT
+getLayerCT layer =
     let
         init : Int -> LayerMsg -> CommonData -> LayerDataType
         init t lm cd =
-            dataToLDT (layer.init t lm cd)
+            dToCT (layer.init t lm cd)
 
         update : Msg -> GlobalData -> LayerMsg -> ( LayerDataType, Int ) -> CommonData -> ( ( LayerDataType, CommonData, List ( LayerTarget, LayerMsg ) ), GlobalData )
         update m gd lm ( ldt, t ) cd =
             let
                 ( ( rldt, rcd, ltm ), newgd ) =
-                    layer.update m gd lm ( ldtToData ldt, t ) cd
+                    layer.update m gd lm ( ctTod ldt, t ) cd
             in
-            ( ( dataToLDT rldt, rcd, ltm ), newgd )
+            ( ( dToCT rldt, rcd, ltm ), newgd )
 
         view : ( LayerDataType, Int ) -> CommonData -> GlobalData -> Renderable
         view ( ldt, t ) cd gd =
-            layer.view ( ldtToData ldt, t ) cd gd
+            layer.view ( ctTod ldt, t ) cd gd
     in
-    Layer (dataToLDT layer.data) init update view
+    Layer (dToCT layer.data) init update view

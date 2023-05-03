@@ -1,4 +1,4 @@
-module Scenes.Home.LayerBase exposing
+module Scenes.$0.LayerBase exposing
     ( CommonData
     , initCommonData
     )
@@ -7,10 +7,15 @@ module Scenes.Home.LayerBase exposing
 
 @docs CommonData
 
+@docs initCommonData
+
 -}
 
 
 {-| CommonData
+
+Edit your own CommonData here!
+
 -}
 type alias CommonData =
     { started : Bool
@@ -18,6 +23,8 @@ type alias CommonData =
     }
 
 
+{-| Init CommonData
+-}
 initCommonData : CommonData
 initCommonData =
     { started = False

@@ -60,7 +60,7 @@ class Messenger:
 
         dol0 = "\n".join([f"import Scenes.{l}.Export as {l}" for l in scenes])
 
-        dol1 = "\n    | ".join([f"{l}DT {l}.Data" for l in scenes])
+        dol1 = "\n    | ".join([f"{l}DataT {l}.Data" for l in scenes])
         with open(".messenger/Templates/scene/Scenes/SceneSettings.elm", "r") as f:
             content = f.read()
         content = content.replace("$0", dol0).replace("$1", dol1)

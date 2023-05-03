@@ -42,12 +42,14 @@ Do you want to install the full version of Messerger?""",
 Press Enter to continue
 """
     )
-    os.mkdir(name)
+    os.makedirs(name, exist_ok=True)
     os.chdir(name)
     os.system(
         f"git clone https://github.com/linsyking/Messenger.git .messenger --depth=1"
     )
-    shutil.copytree(".messenger/Templates/core/", ".")
+    shutil.copytree(".messenger/Templates/core/", "./src")
+    shutil.copy(".messenger/Templates/.gitignore", "./.gitignore")
+    shutil.copy(".messenger/Templates/elm.json", "./elm.json")
 
 
 if __name__ == "__main__":

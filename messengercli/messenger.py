@@ -44,7 +44,7 @@ class Messenger:
         Update scene settings (AllScenes and SceneSettings)
         """
         scenes = [x for x in self.config["scenes"]]
-        with open(".messenger/Templates/scene/Scenes/AllScenes.elm", "r") as f:
+        with open(".messenger/scene/AllScenes.elm", "r") as f:
             content = f.read()
         dol0 = "\n".join(
             [
@@ -61,7 +61,7 @@ class Messenger:
         dol0 = "\n".join([f"import Scenes.{l}.Export as {l}" for l in scenes])
 
         dol1 = "\n    | ".join([f"{l}DataT {l}.Data" for l in scenes])
-        with open(".messenger/Templates/scene/Scenes/SceneSettings.elm", "r") as f:
+        with open(".messenger/scene/SceneSettings.elm", "r") as f:
             content = f.read()
         content = content.replace("$0", dol0).replace("$1", dol1)
         # Write
@@ -90,13 +90,13 @@ class Messenger:
         """
         os.mkdir(f"src/Components/{name}")
         self.update_rep(
-            ".messenger/Templates/component/Components/Sample/Sample.elm",
+            ".messenger/component/Sample/Sample.elm",
             f"src/Components/{name}/{name}.elm",
             0,
             name,
         )
         self.update_rep(
-            ".messenger/Templates/component/Components/Sample/Export.elm",
+            ".messenger/component/Sample/Export.elm",
             f"src/Components/{name}/Export.elm",
             0,
             name,
@@ -115,7 +115,7 @@ class Messenger:
         self.dump_config()
         os.mkdir(f"src/Scenes/{scene}/{layer}")
         self.update_rep(
-            ".messenger/Templates/layer/Sample/Model.elm",
+            ".messenger/layer/Model.elm",
             f"src/Scenes/{scene}/{layer}/Model.elm",
             0,
             scene,
@@ -126,7 +126,7 @@ class Messenger:
             layer,
         )
         self.update_rep(
-            ".messenger/Templates/layer/Sample/Global.elm",
+            ".messenger/layer/Global.elm",
             f"src/Scenes/{scene}/{layer}/Global.elm",
             0,
             scene,
@@ -137,7 +137,7 @@ class Messenger:
             layer,
         )
         self.update_rep(
-            ".messenger/Templates/layer/Sample/Export.elm",
+            ".messenger/layer/Export.elm",
             f"src/Scenes/{scene}/{layer}/Export.elm",
             0,
             scene,
@@ -148,7 +148,7 @@ class Messenger:
             layer,
         )
         self.update_rep(
-            ".messenger/Templates/layer/Sample/Common.elm",
+            ".messenger/layer/Common.elm",
             f"src/Scenes/{scene}/{layer}/Common.elm",
             0,
             f"{scene}.{layer}",
@@ -161,31 +161,31 @@ class Messenger:
         for scene in self.config["scenes"]:
             layers = self.config["scenes"][scene]
             self.update_rep(
-                ".messenger/Templates/scene/Scenes/Sample/Common.elm",
+                ".messenger/scene/Sample/Common.elm",
                 f"src/Scenes/{scene}/Common.elm",
                 0,
                 scene,
             )
             self.update_rep(
-                ".messenger/Templates/scene/Scenes/Sample/Export.elm",
+                ".messenger/scene/Sample/Export.elm",
                 f"src/Scenes/{scene}/Export.elm",
                 0,
                 scene,
             )
             self.update_rep(
-                ".messenger/Templates/scene/Scenes/Sample/Global.elm",
+                ".messenger/scene/Sample/Global.elm",
                 f"src/Scenes/{scene}/Global.elm",
                 0,
                 scene,
             )
             self.update_rep(
-                ".messenger/Templates/scene/Scenes/Sample/LayerBase.elm",
+                ".messenger/scene/Sample/LayerBase.elm",
                 f"src/Scenes/{scene}/LayerBase.elm",
                 0,
                 scene,
             )
             self.update_rep(
-                ".messenger/Templates/scene/Scenes/Sample/LayerSettings.elm",
+                ".messenger/scene/Sample/LayerSettings.elm",
                 f"src/Scenes/{scene}/LayerSettings.elm",
                 0,
                 scene,
@@ -201,7 +201,7 @@ class Messenger:
                 "\n    | ".join([f"{l}Data {l}.Data" for l in layers]),
             )
             self.update_rep(
-                ".messenger/Templates/scene/Scenes/Sample/Model.elm",
+                ".messenger/scene/Sample/Model.elm",
                 f"src/Scenes/{scene}/Model.elm",
                 0,
                 scene,
@@ -251,22 +251,20 @@ Press Enter to continue
     os.makedirs(name, exist_ok=True)
     os.chdir(name)
     os.system(
-        f"git clone -b templates https://github.com/linsyking/Messenger.git .messenger --depth=1"
+        f"git clone https://github.com/linsyking/messenger-templates .messenger --depth=1"
     )
-    shutil.copytree(".messenger/Templates/core/", "./src")
-    shutil.copytree(".messenger/Templates/public/", "./public")
-    shutil.copy(".messenger/Templates/.gitignore", "./.gitignore")
-    shutil.copy(".messenger/Templates/Makefile", "./Makefile")
-    shutil.copy(".messenger/Templates/elm.json", "./elm.json")
+    shutil.copytree(".messenger/core/", "./src")
+    shutil.copytree(".messenger/public/", "./public")
+    shutil.copy(".messenger/.gitignore", "./.gitignore")
+    shutil.copy(".messenger/Makefile", "./Makefile")
+    shutil.copy(".messenger/elm.json", "./elm.json")
 
     os.makedirs("src/Scenes", exist_ok=True)
     os.makedirs("assets", exist_ok=True)
     os.makedirs("src/Components", exist_ok=True)
 
     print("Creating elm.json...")
-    initObject = {
-        "scenes": {}
-    }
+    initObject = {"scenes": {}}
     with open("messenger.json", "w") as f:
         json.dump(initObject, f, indent=4, ensure_ascii=False)
     print("Installing dependencies...")

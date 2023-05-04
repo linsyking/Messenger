@@ -22,7 +22,7 @@ to see the help message.
 
 ## Creating a project
 
-Since you are doing elm project, we assume that the following binaries are available in your path:
+Since you are doing an elm project, we assume that the following binaries are available in your path:
 
 - git
 - elm
@@ -35,7 +35,7 @@ To create a project named `hello`, type:
 messenger init hello
 ```
 
-Then following the instructions to initialize the project.
+Then follow the instructions to initialize the project.
 
 After that, go to the `hello` directory, check if it looks like this:
 

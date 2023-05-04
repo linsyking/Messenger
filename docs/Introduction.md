@@ -13,34 +13,34 @@ I suggest you play the game Reweave. There are many examples explained with that
 
 ## Features
 
-- Message oriented programming
+- Message oriented programming.
   Safer programming, fewer bugs.
-- Auto-adapting
+- Auto-adapting.
   Try resizing the web browser or play Reweave on your phone. There are no difference!
-- LocalStorage support
+- LocalStorage support.
   You can easily manage the game data.
-- Audio Manager
+- Audio Manager.
   It's extremely easy to play audios in Messenger. You can choose to play one audio in loop mode or once mode.
-- Easy textures and sprites
+- Easy textures and sprites.
   It's easy to import textures to your game. The game will not start until all textures are loaded, so the user won't have problems with failing assets or slow loading speed.
-- Canvas rendering
+- Canvas rendering.
   You can use huge amounts of filters in canvas to render the game. It has better performance than the DOM rendering.
-- Modular development
+- Modular development.
   Every component, layer, scene is a module, no worry for the code management.
 
 ## Possible drawbacks
 
 There are some bugs and drawbacks of Messenger:
 
-- Canvas based
+- Canvas based.
   You cannot use HTML tags like `video`, `a`, `b`, etc. and any css are not available in canvas. However, you have better performance and visual effects.
-- Mouse click can arise multiple layers
+- Mouse click can arise multiple layers.
   Normally when you click some object in the web page, only the top object will response. Currently Messenger doesn't implement the `Stopper` function in the `layerHandler` module so all the layers will handle that click event.
 
 ## FAQ
 
 - Q: What kind of games can I use Messenger to make?
-  A: Any video games that have the concept of scenes and layers.
+- A: Any video games that have the concept of scenes and layers.
 - Q: Is it suitable for a mouse-interactive game?
 - A: Currently the mouse event doesn't support shadowing by default. However it is possible to implement it by changing the layer handler module.
 

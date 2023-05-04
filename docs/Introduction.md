@@ -2,6 +2,8 @@
 
 Messenger is a *message-oriented* (2D) game framework for Elm based on **canvas**. You are only allowed to render objects in that canvas (currently).
 
+Messenger is **not** an elm package, it is a framework so some code will be generated in your project.
+
 ## Games that are made with Messenger
 
 I suggest you play the game Reweave. There are many examples explained with that game.
@@ -67,3 +69,10 @@ A Layer (may) contain several **Components**. You can have no component and only
 
 In the next chapter, we will see how to create a new Messenger project.
 
+## Why not a package?
+
+Some people may ask why you don't build all those things into an elm package and there are several reasons.
+
+Elm is a very elementary expression language. It mimics the Haskell, but only contains a subset of it and change some syntax to make it easier to use. A key difference between Elm and Haskell (or PureScript) is that Elm **doesn't work on polymorphisms**. On one hand, polymorphisms in functional programming languages are tricky and diverse, on the other hand, a language with no polymorphisms or other similar functions are too weak for writing a project. There are some cases that you have to write duplicate codes.
+
+Elm packages are independent of the game source code. However, there are some types that need to be defined in the game rather than in the package. So if the package want to use that type, it must stay with the game code.

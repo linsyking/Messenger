@@ -102,6 +102,9 @@ class Messenger:
             name,
         )
 
+    def format(self):
+        os.system("elm-format src/ --yes")
+
     def add_layer(self, scene: str, layer: str):
         """
         Add a layer to a scene
@@ -291,6 +294,7 @@ def component(name: str):
     msg = Messenger()
     input(f"You are going to create a component named {name}, continue?")
     msg.add_component(name)
+    msg.format()
     print("Done!")
 
 
@@ -300,6 +304,8 @@ def scene(name: str):
     input(f"You are going to create a scene named {name}, continue?")
     msg.add_scene(name)
     msg.update_scenes()
+    msg.format()
+    print("Done!")
 
 
 @app.command()
@@ -310,6 +316,8 @@ def layer(scene: str, layer: str):
     )
     msg.add_layer(scene, layer)
     msg.update_layers()
+    msg.format()
+    print("Done!")
 
 
 if __name__ == "__main__":

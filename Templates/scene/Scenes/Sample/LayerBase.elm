@@ -18,15 +18,11 @@ Edit your own CommonData here!
 
 -}
 type alias CommonData =
-    { started : Bool
-    , presstime : Int
-    }
+    { }
 
 
 {-| Init CommonData
 -}
 initCommonData : CommonData
 initCommonData =
-    { started = False
-    , presstime = 0
-    }
+    { }

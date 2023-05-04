@@ -273,6 +273,7 @@ Press Enter to continue
     shutil.copy(".messenger/Templates/elm.json", "./elm.json")
 
     os.makedirs("src/Scenes", exist_ok=True)
+    os.makedirs("assets", exist_ok=True)
     os.makedirs("src/Components", exist_ok=True)
 
     print("Creating elm.json...")

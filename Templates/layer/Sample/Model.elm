@@ -1,4 +1,4 @@
-module Scenes.$0.$1.Models exposing
+module Scenes.$0.$1.Model exposing
     ( initModel
     , updateModel
     , viewModel
@@ -14,9 +14,9 @@ module Scenes.$0.$1.Models exposing
 
 import Array
 import Base exposing (..)
-import Canvas exposing (Renderable, group)
+import Canvas exposing (Renderable)
 import Lib.Component.Base exposing (ComponentTMsg(..))
-import Lib.Component.ComponentHandler exposing (updateComponents)
+import Lib.Component.ComponentHandler exposing (updateComponents, viewComponent)
 import Lib.Layer.Base exposing (LayerMsg(..), LayerTarget(..))
 import Lib.Scene.Base exposing (..)
 import Scenes.$0.$1.Common exposing (..)
@@ -48,7 +48,8 @@ updateModel msg gd _ ( model, t ) cd =
 
 
 {-| viewModel
+Default view function
 -}
 viewModel : ( Model, Int ) -> CommonData -> GlobalData -> Renderable
-viewModel _ _ _ =
-    group [] []
+viewModel ( model, t ) _ gd =
+    viewComponent gd t model.components

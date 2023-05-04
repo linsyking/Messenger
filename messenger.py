@@ -111,6 +111,45 @@ class Messenger:
         self.config["scenes"][scene].append(layer)
         self.dump_config()
         os.mkdir(f"src/Scenes/{scene}/{layer}")
+        self.update_rep(
+            ".messenger/Templates/layer/Sample/Model.elm",
+            f"src/Scenes/{scene}/{layer}/Model.elm",
+            0,
+            scene,
+        )
+        self.update_rep_next(
+            f"src/Scenes/{scene}/{layer}/Model.elm",
+            1,
+            layer,
+        )
+        self.update_rep(
+            ".messenger/Templates/layer/Sample/Global.elm",
+            f"src/Scenes/{scene}/{layer}/Global.elm",
+            0,
+            scene,
+        )
+        self.update_rep_next(
+            f"src/Scenes/{scene}/{layer}/Global.elm",
+            1,
+            layer,
+        )
+        self.update_rep(
+            ".messenger/Templates/layer/Sample/Export.elm",
+            f"src/Scenes/{scene}/{layer}/Export.elm",
+            0,
+            scene,
+        )
+        self.update_rep_next(
+            f"src/Scenes/{scene}/{layer}/Export.elm",
+            1,
+            layer,
+        )
+        self.update_rep(
+            ".messenger/Templates/layer/Sample/Common.elm",
+            f"src/Scenes/{scene}/{layer}/Common.elm",
+            0,
+            f"{scene}.{layer}",
+        )
 
     def update_layers(self):
         """

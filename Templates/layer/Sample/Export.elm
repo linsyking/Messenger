@@ -17,7 +17,7 @@ module Scenes.$0.$1.Export exposing
 import Array
 import Lib.Layer.Base exposing (..)
 import Scenes.$0.$1.Common exposing (Model)
-import Scenes.$0.$1.Models exposing (initModel, updateModel, viewModel)
+import Scenes.$0.$1.Model exposing (initModel, updateModel, viewModel)
 import Scenes.$0.LayerBase exposing (CommonData)
 
 

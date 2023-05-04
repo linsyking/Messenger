@@ -110,11 +110,8 @@ normalUpdate msg model =
             cs =
                 getCurrentScene model
 
-            cd =
-                model.currentData
-
             cm =
-                ( cd, model.time )
+                ( model.currentData, model.time )
 
             ( sdt, som, newgd ) =
                 cs.update msg model.currentGlobalData cm

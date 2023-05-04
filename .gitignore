@@ -1,2 +1,4 @@
 .vscode/
 test/
+*.egg-info/
+dist/

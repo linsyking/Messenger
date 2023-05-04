@@ -264,7 +264,7 @@ Press Enter to continue
     os.makedirs(name, exist_ok=True)
     os.chdir(name)
     os.system(
-        f"git clone https://github.com/linsyking/Messenger.git .messenger --depth=1"
+        f"git clone -b templates https://github.com/linsyking/Messenger.git .messenger --depth=1"
     )
     shutil.copytree(".messenger/Templates/core/", "./src")
     shutil.copytree(".messenger/Templates/public/", "./public")

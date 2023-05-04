@@ -265,9 +265,7 @@ Press Enter to continue
 
     print("Creating elm.json...")
     initObject = {
-        "scenes": {},
-        "components": {},
-        "gamecomponents": {},
+        "scenes": {}
     }
     with open("messenger.json", "w") as f:
         json.dump(initObject, f, indent=4, ensure_ascii=False)

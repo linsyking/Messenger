@@ -4,6 +4,6 @@ from setuptools import setup
 
 setup(
     entry_points={
-        "console_scripts": ["messengerc=messengercli.command_line:main"],
+        "console_scripts": ["messenger=messengercli.command_line:main"],
     }
 )

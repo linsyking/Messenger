@@ -226,7 +226,7 @@ class Messenger:
                 x =
                     {l}.layer
             in
-            {l}G.getLayerCT {{ x | data = {l}.layer.init t NullLayerMsg initCommonData }}
+            {l}G.getLayerT {{ x | data = {l}.layer.init t NullLayerMsg initCommonData }}
           )"""
                         for l in layers
                     ]

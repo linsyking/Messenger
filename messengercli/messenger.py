@@ -237,6 +237,12 @@ class Messenger:
 @app.command()
 def init(
     name: str,
+    template_repo=typer.Option(
+        "https://github.com/linsyking/messenger-templates",
+        "--template-repo",
+        "-t",
+        help="Use customized repository for cloning templates.",
+    ),
 ):
     input(
         f"""Thanks for using Messenger.
@@ -250,9 +256,7 @@ Press Enter to continue
     )
     os.makedirs(name, exist_ok=True)
     os.chdir(name)
-    os.system(
-        f"git clone https://github.com/linsyking/messenger-templates .messenger --depth=1"
-    )
+    os.system(f"git clone {template_repo} .messenger --depth=1")
     shutil.copytree(".messenger/core/", "./src")
     shutil.copytree(".messenger/public/", "./public")
     shutil.copy(".messenger/.gitignore", "./.gitignore")

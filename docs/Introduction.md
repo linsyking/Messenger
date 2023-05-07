@@ -33,7 +33,7 @@ I suggest you play the game Reweave. There are many examples explained with that
 There are some bugs and drawbacks of Messenger:
 
 - Canvas based.
-  You cannot use HTML tags like `video`, `a`, `b`, etc. and any css are not available in canvas. However, videos are possible and are being implemented in elm-canvas.
+  You cannot use HTML tags like `video`, `a`, `b`, etc. and any css are not available in canvas. Videos are not currently possible due to elm-canvas package limitations, but it can be achieved in other ways.
 - Mouse click can arise multiple layers.
   Normally when you click some object in the web page, only the top object will response. Currently Messenger doesn't implement the `Stopper` function in the `layerHandler` module so all the layers will handle that click event.
 

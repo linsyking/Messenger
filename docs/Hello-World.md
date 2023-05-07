@@ -100,14 +100,12 @@ Then we are all done! Simple, right?
 Now go to `src/Scenes/Home/GameLayer/Model.elm`, edit the last part:
 
 ```elm
-viewModel : ( Model, Int ) -> CommonData -> GlobalData -> Maybe Renderable
+viewModel : ( Model, Int ) -> CommonData -> GlobalData -> Renderable
 viewModel ( model, t ) _ gd =
-    Just
-        (group []
-            [ renderSprite gd [ Canvas.Settings.Advanced.filter "blur(5px)" ] ( 0, 0 ) ( 1920, 0 ) "bg"
-            , renderTextWithColor gd 100 "Hello World!" "Times New Roman" Color.blue ( 700, 100 )
-            ]
-        )
+    group []
+        [ renderSprite gd [ Canvas.Settings.Advanced.filter "blur(5px)" ] ( 0, 0 ) ( 1920, 0 ) "bg"
+        , renderTextWithColor gd 100 "Hello World!" "Times New Roman" Color.blue ( 700, 100 )
+        ]
 ```
 
 (You may need to import some functions)

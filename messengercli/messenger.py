@@ -221,13 +221,11 @@ class Messenger:
                 2,
                 ",\n".join(
                     [
-                        f"""( "{l}"
-          , let
+                        f"""let
                 x =
                     {l}.layer
             in
-            {l}G.getLayerT {{ x | data = {l}.layer.init t NullLayerMsg initCommonData }}
-          )"""
+            {l}G.getLayerT {{ x | data = {l}.layer.init (addCommonData nullCommonData env) NullLayerInitData }}"""
                         for l in layers
                     ]
                 ),

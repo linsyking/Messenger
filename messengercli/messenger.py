@@ -137,6 +137,19 @@ class Messenger:
             ],
         ).rep(scene)
 
+        # Modify Scene
+        with open("src/Lib/Scene/Base.elm", "r") as f:
+            scenebase = f.read()
+        new_scenebase = scenebase.replace(
+            "type SceneInitData\n    =",
+            f"type SceneInitData\n    = {scene}InitData {scene}Init\n    |",
+        ).replace(
+            "import Lib.Env.Env exposing (Env)",
+            f"import Lib.Env.Env exposing (Env)\nimport SceneProtos.{scene}.LayerInit exposing ({scene}Init)",
+        )
+        with open("src/Lib/Scene/Base.elm", "w") as f:
+            f.write(new_scenebase)
+
     def add_sceneproto_layer(self, sceneproto: str, layer: str):
         """
         Add a layer in one sceneproto
@@ -177,7 +190,7 @@ class Messenger:
                 [f"import SceneProtos.{sceneproto}.{l}.Export as {l}" for l in layers]
             )
         ).rep(
-            "\n    | ".join([f"{l}DataT {l}.Data" for l in layers])
+            "\n    | ".join([f"{l}Data {l}.Data" for l in layers])
         )
 
         Updater(

@@ -226,7 +226,7 @@ class Messenger:
                 2,
                 ",\n".join(
                     [
-                        f"{l}G.getLayerT ({l}.initLayer (addCommonData nullCommonData env) NullLayerInitData)"
+                        f"{l}G.getLayerT <| {l}.initLayer (addCommonData nullCommonData env) NullLayerInitData"
                         for l in layers
                     ]
                 ),

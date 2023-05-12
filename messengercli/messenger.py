@@ -12,6 +12,7 @@ import json
 from .updater import Updater
 
 app = typer.Typer(add_completion=False, help="Messenger CLI")
+API_VERSION = "0.1.6"
 
 
 class Messenger:
@@ -315,12 +316,14 @@ def init(
     ),
 ):
     input(
-        f"""Thanks for using Messenger.
+        f"""Thanks for using Messenger v{API_VERSION}.
 See https://github.com/linsyking/Messenger.git for more information.
 Here is my plan:
+
 - Create a directory named {name}
 - Install the core Messenger liberary
 - Install the elm packages needed
+
 Press Enter to continue
 """
     )
@@ -339,7 +342,7 @@ Press Enter to continue
     os.makedirs("src/SceneProtos", exist_ok=True)
 
     print("Creating elm.json...")
-    initObject = {"scenes": {}, "sceneprotos": {}}
+    initObject = {"version": API_VERSION, "scenes": {}, "sceneprotos": {}}
     with open("messenger.json", "w") as f:
         json.dump(initObject, f, indent=4, ensure_ascii=False)
     print("Installing dependencies...")

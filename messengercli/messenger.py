@@ -59,8 +59,8 @@ class Messenger:
         """
         Update scene settings (AllScenes and SceneSettings)
         """
-        scenes = [x for x in self.config["scenes"]]
-        sceneprotos = [x for x in self.config["sceneprotos"]]
+        scenes = self.config["scenes"]
+        sceneprotos = self.config["sceneprotos"]
         Updater([".messenger/scene/AllScenes.elm"], ["src/Scenes/AllScenes.elm"]).rep(
             "\n".join(
                 [
@@ -73,8 +73,10 @@ class Messenger:
                 ]
                 + [
                     (
-                        f"import Scenes.{l}.Export as {l}"
-                        for l in sceneprotos[s]["levels"]
+                        "\n".join(
+                            f"import Scenes.{l}.Export as {l}"
+                            for l in sceneprotos[s]["levels"]
+                        )
                     )
                     for s in sceneprotos
                 ]
@@ -84,8 +86,10 @@ class Messenger:
                 [f'( "{l}", {l}G.sceneToST {l}.scene )' for l in scenes]
                 + [
                     (
-                        f'( "{l}", {s}G.sceneToST <| {s}.genScene {l}.game )'
-                        for l in sceneprotos[s]["levels"]
+                        ",\n".join(
+                            f'( "{l}", {s}G.sceneToST <| {s}.genScene {l}.game )'
+                            for l in sceneprotos[s]["levels"]
+                        )
                     )
                     for s in sceneprotos
                 ]
@@ -125,7 +129,7 @@ class Messenger:
                 ".messenger/sceneproto/scene/LayerInit.elm",
             ],
             [
-                f"src/SceneProtos/{scene}/Common.elm"
+                f"src/SceneProtos/{scene}/Common.elm",
                 f"src/SceneProtos/{scene}/Export.elm",
                 f"src/SceneProtos/{scene}/Global.elm",
                 f"src/SceneProtos/{scene}/LayerBase.elm",
@@ -165,7 +169,6 @@ class Messenger:
         Update layers of sceneproto
         """
         layers = self.config["sceneprotos"][sceneproto]["layers"]
-
         Updater(
             [".messenger/sceneproto/scene/LayerSettings.elm"],
             [f"src/SceneProtos/{sceneproto}/LayerSettings.elm"],
@@ -209,7 +212,7 @@ class Messenger:
         os.mkdir(f"src/Scenes/{level}")
         Updater(
             [".messenger/sceneproto/Export.elm"], [f"src/Scenes/{level}/Export.elm"]
-        ).rep(level)
+        ).rep(level).rep(sceneproto)
 
     def add_component(self, name: str):
         """
@@ -359,6 +362,39 @@ def layer(scene: str, layer: str):
     )
     msg.add_layer(scene, layer)
     msg.update_layers(scene)
+    msg.format()
+    print("Done!")
+
+
+@app.command()
+def sceneproto(sceneproto: str):
+    msg = Messenger()
+    input(f"You are going to create a sceneproto named {sceneproto}, continue?")
+    msg.add_sceneproto(sceneproto)
+    msg.format()
+    print("Done!")
+
+
+@app.command()
+def level(sceneproto: str, level: str):
+    msg = Messenger()
+    input(
+        f"You are going to create a level named {level} under sceneproto {sceneproto}, continue?"
+    )
+    msg.add_level(sceneproto, level)
+    msg.update_scenes()
+    msg.format()
+    print("Done!")
+
+
+@app.command()
+def protolayer(sceneproto: str, layer: str):
+    msg = Messenger()
+    input(
+        f"You are going to create a layer named {layer} under sceneproto {sceneproto}, continue?"
+    )
+    msg.add_sceneproto_layer(sceneproto, layer)
+    msg.update_sceneproto_layers(sceneproto)
     msg.format()
     print("Done!")
 

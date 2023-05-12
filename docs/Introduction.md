@@ -46,6 +46,45 @@ There are some bugs and drawbacks of Messenger:
 - Canvas based.
   You cannot use HTML tags like `video`, `a`, `b`, etc. and any css are not available in canvas. **Video** in canvas is not currently possible due to elm-canvas package limitations, but it can be achieved by rendering it in `extraHTML` (but generally you should avoid using it!). **Text input** is also not convenient (though possible to type English characters and numbers, see [the Typer component](https://github.com/linsyking/messenger-examples/tree/main/components)) in canvas due to the same reason, but you can also use the `extraHTML` trick.
 
+## Canvas VS DOM/SVG
+
+SVG/DOM is something like (need to be controlled by DOM):
+
+```html
+<svg viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="50" />
+</svg>
+<div>
+    <b>Hi</b>, <a>I</a> am Bob.
+</div>
+```
+
+Canvas, however is something like (fully controlled by JS):
+
+```html
+<canvas id="canvas" width="578" height="200"></canvas>
+<script>
+  var canvas = document.getElementById('canvas');
+  var context = canvas.getContext('2d');
+  // ...
+</script>
+```
+
+There are many differences between them, like:
+
+- Position.
+  In DOM you can use many ways to position one object, like `flex`. However, in canvas, you can only use coordinates.
+- Mouse events.
+  DOM can automatically do that for you. Canvas is stateless, and it doesn't have default mouse event handler. However, Messenger provides a good solution.
+- Tags.
+  You can directly use `video` tag to play a video, `img` tag to display some image in DOM. In canvas everything is done by controlling the canvas `context`.
+- Visual effects.
+  Canvas allows you to manipulate pixel and apply filter effects. In DOM you have to use CSS but is also limited.
+- Performance
+  Canvas is faster when rendering many objects.
+
+Read [the comparison](https://www.kirupa.com/html5/dom_vs_canvas.htm) or [this blog](https://blog.logrocket.com/when-to-use-html5s-canvas) to learn more. Generally, canvas is better for making video games while DOM is better for other daily-use websites.
+
 ## FAQ
 
 - Q: What kind of games can I use Messenger to make?

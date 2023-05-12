@@ -151,7 +151,12 @@ class Messenger:
             ".messenger/layer/Common.elm",
             f"src/Scenes/{scene}/{layer}/Common.elm",
             0,
-            f"{scene}.{layer}",
+            scene,
+        )
+        self.update_rep_next(
+            f"src/Scenes/{scene}/{layer}/Common.elm",
+            1,
+            layer,
         )
 
     def update_layers(self):
@@ -221,11 +226,7 @@ class Messenger:
                 2,
                 ",\n".join(
                     [
-                        f"""let
-                x =
-                    {l}.layer
-            in
-            {l}G.getLayerT {{ x | data = {l}.layer.init (addCommonData nullCommonData env) NullLayerInitData }}"""
+                        f"{l}G.getLayerT ({l}.initLayer (addCommonData nullCommonData env) NullLayerInitData)"
                         for l in layers
                     ]
                 ),

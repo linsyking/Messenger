@@ -9,8 +9,9 @@ import typer
 import os
 import shutil
 import json
+from .updater import Updater
 
-app = typer.Typer(add_completion=False)
+app = typer.Typer(add_completion=False, help="Messenger CLI")
 
 
 class Messenger:
@@ -32,75 +33,110 @@ class Messenger:
         with open("messenger.json", "w") as f:
             json.dump(self.config, f, indent=4, ensure_ascii=False)
 
-    def add_scene(self, name: str):
-        if name in self.config["scenes"]:
+    def add_scene(self, scene: str):
+        if scene in self.config["scenes"] or scene in self.config["sceneprotos"]:
             raise Exception("Scene already exists.")
-        self.config["scenes"][name] = []
+        self.config["scenes"][scene] = []
         self.dump_config()
-        os.mkdir(f"src/Scenes/{name}")
+        os.mkdir(f"src/Scenes/{scene}")
+
+        Updater(
+            [
+                ".messenger/scene/Sample/Common.elm",
+                ".messenger/scene/Sample/Export.elm",
+                ".messenger/scene/Sample/Global.elm",
+                ".messenger/scene/Sample/LayerBase.elm",
+            ],
+            [
+                f"src/Scenes/{scene}/Common.elm",
+                f"src/Scenes/{scene}/Export.elm",
+                f"src/Scenes/{scene}/Global.elm",
+                f"src/Scenes/{scene}/LayerBase.elm",
+            ],
+        ).rep(scene)
 
     def update_scenes(self):
         """
         Update scene settings (AllScenes and SceneSettings)
         """
         scenes = [x for x in self.config["scenes"]]
-        with open(".messenger/scene/AllScenes.elm", "r") as f:
-            content = f.read()
-        dol0 = "\n".join(
-            [
-                f"import Scenes.{l}.Export as {l}\nimport Scenes.{l}.Global as {l}G"
-                for l in scenes
-            ]
+        sceneprotos = [x for x in self.config["sceneprotos"]]
+        Updater([".messenger/scene/AllScenes.elm"], ["src/Scenes/AllScenes.elm"]).rep(
+            "\n".join(
+                [
+                    f"import Scenes.{l}.Export as {l}\nimport Scenes.{l}.Global as {l}G"
+                    for l in scenes
+                ]
+                + [
+                    f"import SceneProtos.{l}.Export as {l}\nimport SceneProtos.{l}.Global as {l}G"
+                    for l in sceneprotos
+                ]
+                + [
+                    (f"import Scenes.{l}.Export as {l}" for l in sceneprotos[s])
+                    for s in sceneprotos
+                ]
+            )
+        ).rep(
+            ",\n".join(
+                [f'( "{l}", {l}G.sceneToST {l}.scene )' for l in scenes]
+                + [
+                    (
+                        f'( "{l}", {s}G.sceneToST <| {s}.genScene {l}.game )'
+                        for l in sceneprotos[s]
+                    )
+                    for s in sceneprotos
+                ]
+            )
         )
-        dol1 = ",\n".join([f'( "{l}", {l}G.sceneToST {l}.scene )' for l in scenes])
-        content = content.replace("$0", dol0).replace("$1", dol1)
-        # Write
-        with open("src/Scenes/AllScenes.elm", "w") as f:
-            f.write(content)
 
-        dol0 = "\n".join([f"import Scenes.{l}.Export as {l}" for l in scenes])
+        Updater(
+            [".messenger/scene/SceneSettings.elm"], ["src/Scenes/SceneSettings.elm"]
+        ).rep(
+            "\n".join(
+                [f"import Scenes.{l}.Export as {l}" for l in scenes]
+                + [f"import SceneProtos.{l}.Export as {l}" for l in sceneprotos]
+            )
+        ).rep(
+            "\n    | ".join(
+                [f"{l}DataT {l}.Data" for l in scenes]
+                + [f"{l}DataT {l}.Data" for l in sceneprotos]
+            )
+        )
 
-        dol1 = "\n    | ".join([f"{l}DataT {l}.Data" for l in scenes])
-        with open(".messenger/scene/SceneSettings.elm", "r") as f:
-            content = f.read()
-        content = content.replace("$0", dol0).replace("$1", dol1)
-        # Write
-        with open("src/Scenes/SceneSettings.elm", "w") as f:
-            f.write(content)
+    def add_sceneproto(self, scene: str):
+        """
+        Add a sceneproto
+        """
+        if scene in self.config["scenes"] or scene in self.config["sceneprotos"]:
+            raise Exception("Sceneproto already exists.")
+        self.config["sceneprotos"][scene] = []
+        self.dump_config()
+        os.mkdir(f"src/SceneProtos/{scene}")
 
-    def update_rep(self, file_proto, file_output, dollar, rep):
-        with open(file_proto, "r") as f:
-            content = f.read()
-        content = content.replace(f"${dollar}", rep)
-        # Write
-        with open(file_output, "w") as f:
-            f.write(content)
-
-    def update_rep_next(self, file_output, dollar, rep):
-        with open(file_output, "r") as f:
-            content = f.read()
-        content = content.replace(f"${dollar}", rep)
-        # Write
-        with open(file_output, "w") as f:
-            f.write(content)
+    def add_level(self, sceneproto: str, level: str):
+        """
+        Add a level generated by sceneproto
+        """
+        if sceneproto not in self.config["sceneprotos"]:
+            raise Exception("Sceneproto does not exist.")
+        if level in self.config["sceneprotos"][sceneproto]:
+            raise Exception("Level already exists.")
+        self.config["sceneprotos"].append(level)
+        self.dump_config()
+        os.mkdir(f"src/Scenes/{level}")
 
     def add_component(self, name: str):
         """
         Add a component
         """
         os.mkdir(f"src/Components/{name}")
-        self.update_rep(
-            ".messenger/component/Sample/Sample.elm",
-            f"src/Components/{name}/{name}.elm",
-            0,
-            name,
-        )
-        self.update_rep(
-            ".messenger/component/Sample/Export.elm",
-            f"src/Components/{name}/Export.elm",
-            0,
-            name,
-        )
+        Updater(
+            [
+                ".messenger/component/Sample/Sample.elm",
+                ".messenger/component/Sample/Export.elm",
+            ],
+            [f"src/Components/{name}/{name}.elm", f"src/Components/{name}/Export.elm"],
+        ).rep(name)
 
     def format(self):
         os.system("elm-format src/ --yes")
@@ -111,126 +147,59 @@ class Messenger:
         """
         if scene not in self.config["scenes"]:
             raise Exception("Scene doesn't exist.")
+        if layer in self.config["scenes"][scene]:
+            raise Exception("Layer already exists.")
         self.config["scenes"][scene].append(layer)
         self.dump_config()
         os.mkdir(f"src/Scenes/{scene}/{layer}")
-        self.update_rep(
-            ".messenger/layer/Model.elm",
-            f"src/Scenes/{scene}/{layer}/Model.elm",
-            0,
-            scene,
-        )
-        self.update_rep_next(
-            f"src/Scenes/{scene}/{layer}/Model.elm",
-            1,
-            layer,
-        )
-        self.update_rep(
-            ".messenger/layer/Global.elm",
-            f"src/Scenes/{scene}/{layer}/Global.elm",
-            0,
-            scene,
-        )
-        self.update_rep_next(
-            f"src/Scenes/{scene}/{layer}/Global.elm",
-            1,
-            layer,
-        )
-        self.update_rep(
-            ".messenger/layer/Export.elm",
-            f"src/Scenes/{scene}/{layer}/Export.elm",
-            0,
-            scene,
-        )
-        self.update_rep_next(
-            f"src/Scenes/{scene}/{layer}/Export.elm",
-            1,
-            layer,
-        )
-        self.update_rep(
-            ".messenger/layer/Common.elm",
-            f"src/Scenes/{scene}/{layer}/Common.elm",
-            0,
-            scene,
-        )
-        self.update_rep_next(
-            f"src/Scenes/{scene}/{layer}/Common.elm",
-            1,
-            layer,
-        )
 
-    def update_layers(self):
+        Updater(
+            [
+                ".messenger/layer/Model.elm",
+                ".messenger/layer/Global.elm",
+                ".messenger/layer/Export.elm",
+                ".messenger/layer/Common.elm",
+            ],
+            [
+                f"src/Scenes/{scene}/{layer}/Model.elm",
+                f"src/Scenes/{scene}/{layer}/Global.elm",
+                f"src/Scenes/{scene}/{layer}/Export.elm",
+                f"src/Scenes/{scene}/{layer}/Common.elm",
+            ],
+        ).rep(scene).rep(layer)
+
+    def update_layers(self, scene: str):
         """
         Update layer settings.
         """
-        for scene in self.config["scenes"]:
-            layers = self.config["scenes"][scene]
-            self.update_rep(
-                ".messenger/scene/Sample/Common.elm",
-                f"src/Scenes/{scene}/Common.elm",
-                0,
-                scene,
+        layers = self.config["scenes"][scene]
+
+        Updater(
+            [".messenger/scene/Sample/LayerSettings.elm"],
+            [f"src/Scenes/{scene}/LayerSettings.elm"],
+        ).rep(scene).rep(
+            "\n".join([f"import Scenes.{scene}.{l}.Export as {l}" for l in layers])
+        ).rep(
+            "\n    | ".join([f"{l}Data {l}.Data" for l in layers])
+        )
+        Updater(
+            [".messenger/scene/Sample/Model.elm"],
+            [f"src/Scenes/{scene}/Model.elm"],
+        ).rep(scene).rep(
+            "\n".join(
+                [
+                    f"import Scenes.{scene}.{l}.Export as {l}\nimport Scenes.{scene}.{l}.Global as {l}G"
+                    for l in layers
+                ]
             )
-            self.update_rep(
-                ".messenger/scene/Sample/Export.elm",
-                f"src/Scenes/{scene}/Export.elm",
-                0,
-                scene,
+        ).rep(
+            ",\n".join(
+                [
+                    f"{l}G.getLayerT <| {l}.initLayer (addCommonData nullCommonData env) NullLayerInitData"
+                    for l in layers
+                ]
             )
-            self.update_rep(
-                ".messenger/scene/Sample/Global.elm",
-                f"src/Scenes/{scene}/Global.elm",
-                0,
-                scene,
-            )
-            self.update_rep(
-                ".messenger/scene/Sample/LayerBase.elm",
-                f"src/Scenes/{scene}/LayerBase.elm",
-                0,
-                scene,
-            )
-            self.update_rep(
-                ".messenger/scene/Sample/LayerSettings.elm",
-                f"src/Scenes/{scene}/LayerSettings.elm",
-                0,
-                scene,
-            )
-            self.update_rep_next(
-                f"src/Scenes/{scene}/LayerSettings.elm",
-                1,
-                "\n".join([f"import Scenes.{scene}.{l}.Export as {l}" for l in layers]),
-            )
-            self.update_rep_next(
-                f"src/Scenes/{scene}/LayerSettings.elm",
-                2,
-                "\n    | ".join([f"{l}Data {l}.Data" for l in layers]),
-            )
-            self.update_rep(
-                ".messenger/scene/Sample/Model.elm",
-                f"src/Scenes/{scene}/Model.elm",
-                0,
-                scene,
-            )
-            self.update_rep_next(
-                f"src/Scenes/{scene}/Model.elm",
-                1,
-                "\n".join(
-                    [
-                        f"import Scenes.{scene}.{l}.Export as {l}\nimport Scenes.{scene}.{l}.Global as {l}G"
-                        for l in layers
-                    ]
-                ),
-            )
-            self.update_rep_next(
-                f"src/Scenes/{scene}/Model.elm",
-                2,
-                ",\n".join(
-                    [
-                        f"{l}G.getLayerT <| {l}.initLayer (addCommonData nullCommonData env) NullLayerInitData"
-                        for l in layers
-                    ]
-                ),
-            )
+        )
 
 
 @app.command()
@@ -265,9 +234,10 @@ Press Enter to continue
     os.makedirs("src/Scenes", exist_ok=True)
     os.makedirs("assets", exist_ok=True)
     os.makedirs("src/Components", exist_ok=True)
+    os.makedirs("src/SceneProtos", exist_ok=True)
 
     print("Creating elm.json...")
-    initObject = {"scenes": {}}
+    initObject = {"scenes": {}, "sceneprotos": {}}
     with open("messenger.json", "w") as f:
         json.dump(initObject, f, indent=4, ensure_ascii=False)
     print("Installing dependencies...")
@@ -302,7 +272,7 @@ def layer(scene: str, layer: str):
         f"You are going to create a layer named {layer} under scene {scene}, continue?"
     )
     msg.add_layer(scene, layer)
-    msg.update_layers()
+    msg.update_layers(scene)
     msg.format()
     print("Done!")
 

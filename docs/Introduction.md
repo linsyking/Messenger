@@ -11,10 +11,17 @@ I suggest you play the game Reweave. There are many examples explained with that
 - [Reweave](https://focs.ji.sjtu.edu.cn/silverfocs/demo/2022/p2team01/)
 - Waiting for your project!
 
+> Hint on playing Reweave:
+>
+> You can press ` button to open the console and there are some cheat commands:
+>
+> - `load <map>`: load the required map
+> - `gete <num>`: get the required number of energy, unlimited
+
 ## Features
 
-- Message oriented programming.
-  Safer programming, fewer bugs.
+- Message based, (functional) object oriented programming.
+  Faster development cycle, easy to divide work.
 - Auto-adapting.
   Try resizing the web browser or play Reweave on your phone. There are no difference!
 - LocalStorage support.
@@ -27,22 +34,21 @@ I suggest you play the game Reweave. There are many examples explained with that
   You can use huge amounts of filters in canvas to render the game. It has better performance than the DOM rendering.
 - Modular development.
   Every component, layer, scene is a module, no worry for the code management.
+- Mouse event fully supported.
+  Although we use canvas and the layer concept is abstract, you can also control the mouse event easily. [This layer example](https://github.com/linsyking/messenger-examples/tree/main/layers) shows that it is possible to block the mouse event. The core mechanism is that **the order of rendering layers/components/etc. is reversed from the order of updating them**. That is to say, the topmost object will be rendered last but be updated first, so you can choose to block the mouse event in the topmost object so that the other objects below it won't see the mouse event. In the example above, when you click on the white circle zone, only the green rectangle can receive the click message.
+  ![](imgs/layer.png)
 
 ## Possible drawbacks
 
 There are some bugs and drawbacks of Messenger:
 
 - Canvas based.
-  You cannot use HTML tags like `video`, `a`, `b`, etc. and any css are not available in canvas. Videos are not currently possible due to elm-canvas package limitations, but it can be achieved in other ways.
-- Mouse click can arise multiple layers.
-  Normally when you click some object in the web page, only the top object will response. Currently Messenger doesn't implement the `Stopper` function in the `layerHandler` module so all the layers will handle that click event.
+  You cannot use HTML tags like `video`, `a`, `b`, etc. and any css are not available in canvas. **Video** in canvas is not currently possible due to elm-canvas package limitations, but it can be achieved by rendering it in `extraHTML` (but generally you should avoid using it!). **Text input** is also not convenient (though possible to type English characters and numbers, see [the Typer component](https://github.com/linsyking/messenger-examples/tree/main/components)) in canvas due to the same reason, but you can also use the `extraHTML` trick.
 
 ## FAQ
 
 - Q: What kind of games can I use Messenger to make?
 - A: Any video games that have the concept of scenes and layers.
-- Q: Is it suitable for a mouse-interactive game?
-- A: Currently the mouse event doesn't support shadowing by default. However it is possible to implement it by changing the layer handler module.
 
 ## Conceptual Picture
 

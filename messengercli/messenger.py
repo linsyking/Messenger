@@ -72,7 +72,10 @@ class Messenger:
                     for l in sceneprotos
                 ]
                 + [
-                    (f"import Scenes.{l}.Export as {l}" for l in sceneprotos[s])
+                    (
+                        f"import Scenes.{l}.Export as {l}"
+                        for l in sceneprotos[s]["levels"]
+                    )
                     for s in sceneprotos
                 ]
             )
@@ -82,7 +85,7 @@ class Messenger:
                 + [
                     (
                         f'( "{l}", {s}G.sceneToST <| {s}.genScene {l}.game )'
-                        for l in sceneprotos[s]
+                        for l in sceneprotos[s]["levels"]
                     )
                     for s in sceneprotos
                 ]
@@ -109,9 +112,89 @@ class Messenger:
         """
         if scene in self.config["scenes"] or scene in self.config["sceneprotos"]:
             raise Exception("Sceneproto already exists.")
-        self.config["sceneprotos"][scene] = []
+        self.config["sceneprotos"][scene] = {"levels": [], "layers": []}
         self.dump_config()
         os.mkdir(f"src/SceneProtos/{scene}")
+
+        Updater(
+            [
+                ".messenger/sceneproto/scene/Common.elm",
+                ".messenger/sceneproto/scene/Export.elm",
+                ".messenger/sceneproto/scene/Global.elm",
+                ".messenger/sceneproto/scene/LayerBase.elm",
+                ".messenger/sceneproto/scene/LayerInit.elm",
+            ],
+            [
+                f"src/SceneProtos/{scene}/Common.elm"
+                f"src/SceneProtos/{scene}/Export.elm",
+                f"src/SceneProtos/{scene}/Global.elm",
+                f"src/SceneProtos/{scene}/LayerBase.elm",
+                f"src/SceneProtos/{scene}/LayerInit.elm",
+            ],
+        ).rep(scene)
+
+    def add_sceneproto_layer(self, sceneproto: str, layer: str):
+        """
+        Add a layer in one sceneproto
+        """
+        if sceneproto not in self.config["sceneprotos"]:
+            raise Exception("Sceneproto does not exist.")
+        if layer in self.config["sceneprotos"][sceneproto]["layers"]:
+            raise Exception("Layer already exists.")
+        self.config["sceneprotos"][sceneproto]["layers"].append(layer)
+        self.dump_config()
+        os.mkdir(f"src/SceneProtos/{sceneproto}/{layer}")
+
+        Updater(
+            [
+                ".messenger/sceneproto/layer/Model.elm",
+                ".messenger/sceneproto/layer/Global.elm",
+                ".messenger/sceneproto/layer/Export.elm",
+                ".messenger/sceneproto/layer/Common.elm",
+            ],
+            [
+                f"src/SceneProtos/{sceneproto}/{layer}/Model.elm",
+                f"src/SceneProtos/{sceneproto}/{layer}/Global.elm",
+                f"src/SceneProtos/{sceneproto}/{layer}/Export.elm",
+                f"src/SceneProtos/{sceneproto}/{layer}/Common.elm",
+            ],
+        ).rep(sceneproto).rep(layer)
+
+    def update_sceneproto_layers(self, sceneproto: str):
+        """
+        Update layers of sceneproto
+        """
+        layers = self.config["sceneprotos"][sceneproto]["layers"]
+
+        Updater(
+            [".messenger/sceneproto/scene/LayerSettings.elm"],
+            [f"src/SceneProtos/{sceneproto}/LayerSettings.elm"],
+        ).rep(sceneproto).rep(
+            "\n".join(
+                [f"import SceneProtos.{sceneproto}.{l}.Export as {l}" for l in layers]
+            )
+        ).rep(
+            "\n    | ".join([f"{l}DataT {l}.Data" for l in layers])
+        )
+
+        Updater(
+            [".messenger/sceneproto/scene/Model.elm"],
+            [f"src/SceneProtos/{sceneproto}/Model.elm"],
+        ).rep(sceneproto).rep(
+            "\n".join(
+                [
+                    f"import SceneProtos.{sceneproto}.{l}.Export as {l}\nimport SceneProtos.{sceneproto}.{l}.Global as {l}G"
+                    for l in layers
+                ]
+            )
+        ).rep(
+            ",\n".join(
+                [
+                    f"{l}G.getLayerT <| {l}.initLayer (addCommonData nullCommonData env) NullLayerInitData"
+                    for l in layers
+                ]
+            )
+        )
 
     def add_level(self, sceneproto: str, level: str):
         """
@@ -119,11 +202,14 @@ class Messenger:
         """
         if sceneproto not in self.config["sceneprotos"]:
             raise Exception("Sceneproto does not exist.")
-        if level in self.config["sceneprotos"][sceneproto]:
+        if level in self.config["sceneprotos"][sceneproto]["levels"]:
             raise Exception("Level already exists.")
-        self.config["sceneprotos"].append(level)
+        self.config["sceneprotos"][sceneproto]["levels"].append(level)
         self.dump_config()
         os.mkdir(f"src/Scenes/{level}")
+        Updater(
+            [".messenger/sceneproto/Export.elm"], [f"src/Scenes/{level}/Export.elm"]
+        ).rep(level)
 
     def add_component(self, name: str):
         """

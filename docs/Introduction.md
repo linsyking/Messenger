@@ -11,9 +11,9 @@ I suggest you play the game Reweave. There are many examples explained with that
 - [Reweave](https://focs.ji.sjtu.edu.cn/silverfocs/demo/2022/p2team01/)
 - Waiting for your project!
 
-> Hint on playing Reweave:
+> Hints on playing Reweave:
 >
-> You can press ` button to open the console and there are some cheat commands:
+> You can press \` button to open the console and use some cheat commands:
 >
 > - `load <map>`: load the required map
 > - `gete <num>`: get the required number of energy, unlimited
@@ -25,7 +25,7 @@ I suggest you play the game Reweave. There are many examples explained with that
 - Auto-adapting.
   Try resizing the web browser or play Reweave on your phone. There are no difference!
 - LocalStorage support.
-  You can easily manage the game data.
+  You can easily manage the game data. Players don't have to finish your game in one run.
 - Audio Manager.
   It's extremely easy to play audios in Messenger. You can choose to play one audio in loop mode or once mode.
 - Easy textures and sprites.
@@ -34,10 +34,14 @@ I suggest you play the game Reweave. There are many examples explained with that
   You can use huge amounts of filters in canvas to render the game. It has better performance than the DOM rendering.
 - Modular development.
   Every component, layer, scene is a module, no worry for the code management.
+- Flexible framework design.
+  Our game framework is *progressive*. You can use the most basic framework: only scenes, and mange the layers by yourself or don't use layers. If you want to use layers, then use it! Layers don't depend on any other things like components. You can add components to a layer but it is up to you. Scene prototypes are also optional, but it is often useful when making a game which has maps or repeated scenes.
+- Flexible component design.
+  The component in Messenger is quite flexible (but not so efficient as game components/customized components). You can embed component into a component and a component doesn't have to be a "real object", it can be a character manager, etc.. See [Typer component](https://github.com/linsyking/messenger-examples/tree/main/components) for an example.
 - Mouse event fully supported.
   Although we use canvas and the layer concept is abstract, you can also control the mouse event easily. [This layer example](https://github.com/linsyking/messenger-examples/tree/main/layers) shows that it is possible to block the mouse event. The core mechanism is that **the order of rendering layers/components/etc. is reversed from the order of updating them**. That is to say, the topmost object will be rendered last but be updated first, so you can choose to block the mouse event in the topmost object so that the other objects below it won't see the mouse event. In the example above, when you click on the white circle zone, only the green rectangle can receive the click message.
   ![](imgs/layer.png)
-  It's also possible to make a drawing game, thanks to the [elm-canvas](https://github.com/joakin/elm-canvas/tree/5.0.0) support (however the original project doesn't update anymore so we use a fork project). See [the simple paint](https://chimeces.com/elm-canvas/drawing.html). More examples can be found on [examples](https://chimeces.com/elm-canvas/). If you need that you may need to add custom mouse events to the subscriptions in `Main.elm`.
+  It's also possible to make a drawing game, thanks to the [elm-canvas](https://github.com/joakin/elm-canvas/tree/5.0.0) package (however the original project doesn't update anymore so we use a fork project). See [the simple paint](https://chimeces.com/elm-canvas/drawing.html). More examples can be found on [examples](https://chimeces.com/elm-canvas/). If you need that you may need to add custom mouse events to the subscriptions in `Main.elm`.
 
 ## Possible drawbacks
 

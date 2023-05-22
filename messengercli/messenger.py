@@ -12,7 +12,7 @@ import json
 from .updater import Updater
 
 app = typer.Typer(add_completion=False, help="Messenger CLI")
-API_VERSION = "0.1.7"
+API_VERSION = "0.1.8"
 
 
 class Messenger:
@@ -272,17 +272,20 @@ class Messenger:
         """
         if sceneproto not in self.config["sceneprotos"]:
             raise Exception("SceneProto doesn't exist.")
-        
+
         os.mkdir(f"src/SceneProtos/{sceneproto}/GameComponents/{gc}")
-        Updater([
-            ".messenger/sceneproto/gamecomponent/Sample/Base.elm",
-            ".messenger/sceneproto/gamecomponent/Sample/Export.elm",
-            ".messenger/sceneproto/gamecomponent/Sample/Model.elm",
-        ],[
-            f"src/SceneProtos/{sceneproto}/GameComponents/{gc}/Base.elm",
-            f"src/SceneProtos/{sceneproto}/GameComponents/{gc}/Export.elm",
-            f"src/SceneProtos/{sceneproto}/GameComponents/{gc}/Model.elm"
-        ]).rep(sceneproto).rep(gc)
+        Updater(
+            [
+                ".messenger/sceneproto/gamecomponent/Sample/Base.elm",
+                ".messenger/sceneproto/gamecomponent/Sample/Export.elm",
+                ".messenger/sceneproto/gamecomponent/Sample/Model.elm",
+            ],
+            [
+                f"src/SceneProtos/{sceneproto}/GameComponents/{gc}/Base.elm",
+                f"src/SceneProtos/{sceneproto}/GameComponents/{gc}/Export.elm",
+                f"src/SceneProtos/{sceneproto}/GameComponents/{gc}/Model.elm",
+            ],
+        ).rep(sceneproto).rep(gc)
 
         # Modify GameComponent
         with open(f"src/SceneProtos/{sceneproto}/GameComponent/Base.elm", "r") as f:
@@ -300,7 +303,7 @@ class Messenger:
     def format(self):
         os.system("elm-format src/ --yes")
 
-    def add_layer(self, scene: str, layer: str):
+    def add_layer(self, scene: str, layer: str, has_component: bool):
         """
         Add a layer to a scene
         """
@@ -326,6 +329,17 @@ class Messenger:
                 f"src/Scenes/{scene}/{layer}/Common.elm",
             ],
         ).rep(scene).rep(layer)
+        if has_component:
+            Updater(
+                [
+                    ".messenger/layer/Model_C.elm",
+                    ".messenger/layer/Common_C.elm",
+                ],
+                [
+                    f"src/Scenes/{scene}/{layer}/Model.elm",
+                    f"src/Scenes/{scene}/{layer}/Common.elm",
+                ],
+            ).rep(scene).rep(layer)
 
     def update_layers(self, scene: str):
         """
@@ -427,12 +441,18 @@ def scene(name: str):
 
 
 @app.command()
-def layer(scene: str, layer: str):
+def layer(
+    scene: str,
+    layer: str,
+    has_component: bool = typer.Option(
+        False, "--with-component", "-c", help="Use components in this layer"
+    ),
+):
     msg = Messenger()
     input(
         f"You are going to create a layer named {layer} under scene {scene}, continue?"
     )
-    msg.add_layer(scene, layer)
+    msg.add_layer(scene, layer, has_component)
     msg.update_layers(scene)
     msg.format()
     print("Done!")
@@ -470,8 +490,9 @@ def protolayer(sceneproto: str, layer: str):
     msg.format()
     print("Done!")
 
+
 @app.command()
-def gamecomponent(sceneproto:str, gc:str):
+def gamecomponent(sceneproto: str, gc: str):
     msg = Messenger()
     input(
         f"You are going to create a game component named {gc} under sceneproto {sceneproto}, continue?"
@@ -479,6 +500,7 @@ def gamecomponent(sceneproto:str, gc:str):
     msg.add_gamecomponent(sceneproto, gc)
     msg.format()
     print("Done!")
+
 
 if __name__ == "__main__":
     app()

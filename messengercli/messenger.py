@@ -12,7 +12,7 @@ import json
 from .updater import Updater
 
 app = typer.Typer(add_completion=False, help="Messenger CLI")
-API_VERSION = "0.1.8"
+API_VERSION = "0.1.9"
 
 
 class Messenger:
@@ -404,6 +404,7 @@ Press Enter to continue
     shutil.copytree(".messenger/public/", "./public")
     shutil.copy(".messenger/.gitignore", "./.gitignore")
     shutil.copy(".messenger/Makefile", "./Makefile")
+    shutil.copy(".messenger/make", "./make")
     shutil.copy(".messenger/elm.json", "./elm.json")
 
     os.makedirs("src/Scenes", exist_ok=True)

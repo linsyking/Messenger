@@ -27,7 +27,7 @@ Since you are doing an elm project, we assume that the following binaries are av
 - git
 - elm
 - elm-format
-- make
+- make (or bash)
 
 To create a project named `hello`, type:
 
@@ -45,6 +45,7 @@ After that, go to the `hello` directory, check if it looks like this:
 ├── elm.json
 ├── elm-stuff
 ├── Makefile
+├── make
 ├── messenger.json
 ├── public
 └── src
@@ -71,7 +72,11 @@ messenger layer Home GameLayer
 Now try to make the project:
 
 ```bash
+# If you have make
 make
+
+# If not, use bash script
+./make
 ```
 
 It should compile. Open the `index.html` file to see the result. It should be a white space.

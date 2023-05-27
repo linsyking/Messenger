@@ -1,0 +1,19 @@
+# Changelog
+
+This changelog only contains changes in CLI tools of Messenger. See [Changelog](https://github.com/linsyking/messenger-templates/blob/main/Changelog.md) for changelog of Messenger templates.
+
+## 0.2.0
+
+### Features
+
+- Add bash script
+
+### Fix
+
+- Do not update Model
+
+## 0.1.9
+
+### Features
+
+- On demand component support in layer

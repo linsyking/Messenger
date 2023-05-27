@@ -10,9 +10,10 @@ import os
 import shutil
 import json
 from .updater import Updater
+from .patcher import patch
 
 app = typer.Typer(add_completion=False, help="Messenger CLI")
-API_VERSION = "0.2.0"
+API_VERSION = "0.2.1"
 
 
 class Messenger:
@@ -26,9 +27,9 @@ class Messenger:
             with open("messenger.json", "r") as f:
                 self.config = json.load(f)
             if "version" not in self.config:
-                raise Exception("API version not found in the config file.")
+                raise Exception("Messenger API version not found in the config file.")
             if self.config["version"] != API_VERSION:
-                raise Exception(f"API version not matched. I'm using v{API_VERSION}.")
+                raise Exception(f"Messenger API version not matched. I'm using v{API_VERSION}. You can edit messenger.json manually to upgrade.")
         else:
             raise Exception(
                 "messenger.json not found. Are you in the project initialized by the Messenger? Try `messenger init <your-project-name>`."
@@ -391,7 +392,7 @@ See https://github.com/linsyking/Messenger.git for more information.
 Here is my plan:
 
 - Create a directory named {name}
-- Install the core Messenger liberary
+- Install the core Messenger library
 - Install the elm packages needed
 
 Press Enter to continue
@@ -400,7 +401,7 @@ Press Enter to continue
     os.makedirs(name, exist_ok=True)
     os.chdir(name)
     os.system(f"git clone {template_repo} .messenger --depth=1")
-    shutil.copytree(".messenger/core/", "./src")
+    shutil.copytree(".messenger/src/", "./src")
     shutil.copytree(".messenger/public/", "./public")
     shutil.copy(".messenger/.gitignore", "./.gitignore")
     shutil.copy(".messenger/Makefile", "./Makefile")
@@ -522,6 +523,14 @@ def gamecomponent(sceneproto: str, gc: str):
     msg.format()
     print("Done!")
 
+
+@app.command(help="Update Messenger core library")
+def updatelib():
+    msg = Messenger()
+    input(f"You are going to update the core library of Messenger, continue?")
+    patch()
+    msg.format()
+    print("Done!")
 
 if __name__ == "__main__":
     app()

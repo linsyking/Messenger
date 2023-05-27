@@ -12,7 +12,7 @@ import json
 from .updater import Updater
 
 app = typer.Typer(add_completion=False, help="Messenger CLI")
-API_VERSION = "0.1.9"
+API_VERSION = "0.2.0"
 
 
 class Messenger:
@@ -47,16 +47,16 @@ class Messenger:
 
         Updater(
             [
-                ".messenger/scene/Sample/Common.elm",
                 ".messenger/scene/Sample/Export.elm",
                 ".messenger/scene/Sample/Global.elm",
+                ".messenger/scene/Sample/Model.elm",
                 ".messenger/scene/Sample/LayerBase.elm",
                 ".messenger/scene/Sample/LayerInit.elm",
             ],
             [
-                f"src/Scenes/{scene}/Common.elm",
                 f"src/Scenes/{scene}/Export.elm",
                 f"src/Scenes/{scene}/Global.elm",
+                f"src/Scenes/{scene}/Model.elm",
                 f"src/Scenes/{scene}/LayerBase.elm",
                 f"src/Scenes/{scene}/LayerInit.elm",
             ],
@@ -144,18 +144,18 @@ class Messenger:
 
         Updater(
             [
-                ".messenger/sceneproto/scene/Common.elm",
                 ".messenger/sceneproto/scene/Export.elm",
                 ".messenger/sceneproto/scene/Global.elm",
+                ".messenger/sceneproto/scene/Model.elm",
                 ".messenger/sceneproto/scene/LayerBase.elm",
                 ".messenger/sceneproto/scene/LayerInit.elm",
                 ".messenger/sceneproto/gamecomponent/Base.elm",
                 ".messenger/sceneproto/gamecomponent/Handler.elm",
             ],
             [
-                f"src/SceneProtos/{scene}/Common.elm",
                 f"src/SceneProtos/{scene}/Export.elm",
                 f"src/SceneProtos/{scene}/Global.elm",
+                f"src/SceneProtos/{scene}/Model.elm",
                 f"src/SceneProtos/{scene}/LayerBase.elm",
                 f"src/SceneProtos/{scene}/LayerInit.elm",
                 f"src/SceneProtos/{scene}/GameComponent/Base.elm",
@@ -220,8 +220,8 @@ class Messenger:
         )
 
         Updater(
-            [".messenger/sceneproto/scene/Model.elm"],
-            [f"src/SceneProtos/{sceneproto}/Model.elm"],
+            [".messenger/sceneproto/scene/Common.elm"],
+            [f"src/SceneProtos/{sceneproto}/Common.elm"],
         ).rep(sceneproto).rep(
             "\n".join(
                 [
@@ -356,8 +356,8 @@ class Messenger:
             "\n    | ".join([f"{l}Data {l}.Data" for l in layers])
         )
         Updater(
-            [".messenger/scene/Sample/Model.elm"],
-            [f"src/Scenes/{scene}/Model.elm"],
+            [".messenger/scene/Sample/Common.elm"],
+            [f"src/Scenes/{scene}/Common.elm"],
         ).rep(scene).rep(
             "\n".join(
                 [
@@ -427,6 +427,26 @@ def component(name: str):
     msg = Messenger()
     input(f"You are going to create a component named {name}, continue?")
     msg.add_component(name)
+    msg.format()
+    print("Done!")
+
+
+@app.command()
+def update(
+    scene=typer.Option(False, "--scene", "-s", help="Update scenes."),
+    scenelayer=typer.Option(None, "--scenelayer", "-sl", help="Update layers in that scene."),
+    sceneprotolayer=typer.Option(None, "--sceneprotolayer", "-spl", help="Update sceneproto layers in that sceneproto."),
+):
+    msg = Messenger()
+    input(
+        f"You are going to regenerate settings (including scenes, layers, sceneproto layers), continue?"
+    )
+    if scene:
+        msg.update_scenes()
+    if scenelayer is not None:
+        msg.update_layers(scenelayer)
+    if sceneprotolayer is not None:
+        msg.update_sceneproto_layers(sceneprotolayer)
     msg.format()
     print("Done!")
 

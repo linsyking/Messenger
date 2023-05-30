@@ -13,7 +13,7 @@ from .updater import Updater
 from .patcher import patch
 
 app = typer.Typer(add_completion=False, help="Messenger CLI")
-API_VERSION = "0.2.1"
+API_VERSION = "0.2.2"
 
 
 class Messenger:
@@ -233,7 +233,7 @@ class Messenger:
         ).rep(
             ",\n".join(
                 [
-                    f"{l}G.getLayerT <| {l}.initLayer (addCommonData nullCommonData env) ({l}.initFromScene env layerInitData)"
+                    f"{l}G.getLayerT <| {l}.initLayer (addCommonData nullCommonData env) layerInitData"
                     for l in layers
                 ]
             )
@@ -369,7 +369,7 @@ class Messenger:
         ).rep(
             ",\n".join(
                 [
-                    f"{l}G.getLayerT <| {l}.initLayer (addCommonData nullCommonData env)  ({l}.initFromScene env layerInitData)"
+                    f"{l}G.getLayerT <| {l}.initLayer (addCommonData nullCommonData env) layerInitData"
                     for l in layers
                 ]
             )

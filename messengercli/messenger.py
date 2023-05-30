@@ -13,7 +13,7 @@ from .updater import Updater
 from .patcher import patch
 
 app = typer.Typer(add_completion=False, help="Messenger CLI")
-API_VERSION = "0.2.3"
+API_VERSION = "0.2.4"
 
 
 class Messenger:
@@ -34,6 +34,10 @@ class Messenger:
             raise Exception(
                 "messenger.json not found. Are you in the project initialized by the Messenger? Try `messenger init <your-project-name>`."
             )
+        if not os.path.exists(".messenger"):
+            print("Messenger files not found. Initializing...")
+            os.system(f"git clone {self.config['template_repo']} .messenger --depth=1")
+
 
     def dump_config(self):
         with open("messenger.json", "w") as f:
@@ -414,7 +418,7 @@ Press Enter to continue
     os.makedirs("src/SceneProtos", exist_ok=True)
 
     print("Creating elm.json...")
-    initObject = {"version": API_VERSION, "scenes": {}, "sceneprotos": {}}
+    initObject = {"version": API_VERSION, "template_repo" : template_repo, "scenes": {}, "sceneprotos": {}}
     with open("messenger.json", "w") as f:
         json.dump(initObject, f, indent=4, ensure_ascii=False)
     print("Installing dependencies...")

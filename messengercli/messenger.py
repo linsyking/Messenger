@@ -13,7 +13,7 @@ from .updater import Updater
 from .patcher import patch
 
 app = typer.Typer(add_completion=False, help="Messenger CLI")
-API_VERSION = "0.2.2"
+API_VERSION = "0.2.3"
 
 
 class Messenger:
@@ -52,14 +52,14 @@ class Messenger:
                 ".messenger/scene/Sample/Global.elm",
                 ".messenger/scene/Sample/Model.elm",
                 ".messenger/scene/Sample/LayerBase.elm",
-                ".messenger/scene/Sample/LayerInit.elm",
+                ".messenger/scene/Sample/SceneInit.elm",
             ],
             [
                 f"src/Scenes/{scene}/Export.elm",
                 f"src/Scenes/{scene}/Global.elm",
                 f"src/Scenes/{scene}/Model.elm",
                 f"src/Scenes/{scene}/LayerBase.elm",
-                f"src/Scenes/{scene}/LayerInit.elm",
+                f"src/Scenes/{scene}/SceneInit.elm",
             ],
         ).rep(scene)
 
@@ -71,7 +71,7 @@ class Messenger:
             f"type SceneInitData\n    = {scene}InitData {scene}Init\n    |",
         ).replace(
             "import Lib.Env.Env exposing (Env)",
-            f"import Lib.Env.Env exposing (Env)\nimport Scenes.{scene}.LayerInit exposing ({scene}Init)",
+            f"import Lib.Env.Env exposing (Env)\nimport Scenes.{scene}.SceneInit exposing ({scene}Init)",
         )
         with open("src/Lib/Scene/Base.elm", "w") as f:
             f.write(new_scenebase)
@@ -149,7 +149,7 @@ class Messenger:
                 ".messenger/sceneproto/scene/Global.elm",
                 ".messenger/sceneproto/scene/Model.elm",
                 ".messenger/sceneproto/scene/LayerBase.elm",
-                ".messenger/sceneproto/scene/LayerInit.elm",
+                ".messenger/sceneproto/scene/SceneInit.elm",
                 ".messenger/sceneproto/gamecomponent/Base.elm",
                 ".messenger/sceneproto/gamecomponent/Handler.elm",
             ],
@@ -158,7 +158,7 @@ class Messenger:
                 f"src/SceneProtos/{scene}/Global.elm",
                 f"src/SceneProtos/{scene}/Model.elm",
                 f"src/SceneProtos/{scene}/LayerBase.elm",
-                f"src/SceneProtos/{scene}/LayerInit.elm",
+                f"src/SceneProtos/{scene}/SceneInit.elm",
                 f"src/SceneProtos/{scene}/GameComponent/Base.elm",
                 f"src/SceneProtos/{scene}/GameComponent/Handler.elm",
             ],
@@ -172,7 +172,7 @@ class Messenger:
             f"type SceneInitData\n    = {scene}InitData {scene}Init\n    |",
         ).replace(
             "import Lib.Env.Env exposing (Env)",
-            f"import Lib.Env.Env exposing (Env)\nimport SceneProtos.{scene}.LayerInit exposing ({scene}Init)",
+            f"import Lib.Env.Env exposing (Env)\nimport SceneProtos.{scene}.SceneInit exposing ({scene}Init)",
         )
         with open("src/Lib/Scene/Base.elm", "w") as f:
             f.write(new_scenebase)

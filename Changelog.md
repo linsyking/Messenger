@@ -4,7 +4,7 @@ This changelog only contains changes in CLI tools of Messenger. See [Changelog](
 
 ## 0.2.2
 
-## Changes
+### Changes
 
 - Directly use Scene Init Data to initialize layer
 

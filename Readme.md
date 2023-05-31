@@ -6,10 +6,10 @@ Messenger is **not** an elm package, it is a framework so some code will be gene
 
 ## Games that are made with Messenger
 
-I suggest you play the game Reweave. There are many examples explained with that game.
-
 - [Reweave](https://focs.ji.sjtu.edu.cn/silverfocs/demo/2022/p2team01/)
 - Waiting for your project!
+
+I recommend you to play the game Reweave. There are many examples explained with that game in the documentation.
 
 > Hints on playing Reweave:
 >
@@ -37,9 +37,11 @@ I suggest you play the game Reweave. There are many examples explained with that
 - Flexible framework design.
   Our game framework is *progressive*. You can use the most basic framework: only scenes, and mange the layers by yourself or don't use layers. If you want to use layers, then use it! Layers don't depend on any other things like components. You can add components to a layer but it is up to you. Scene prototypes are also optional, but it is often useful when making a game which has maps or repeated scenes.
 - Flexible component design.
-  The component in Messenger is quite flexible (but not so efficient as game components/customized components). You can embed component into a component and a component doesn't have to be a "real object", it can be a character manager, etc.. See [Typer component](https://github.com/linsyking/messenger-examples/tree/main/components) for an example.
+  The component in Messenger is quite flexible (but not so efficient as game components/customized components). You can embed component into a component and a component doesn't have to be a "real object", it can be a character manager, etc. See [Typer component](https://github.com/linsyking/messenger-examples/tree/main/components) for an example.
+- Powerful configuration file.
+  In `MainConfig.elm`, you can set your canvas size, initial scene, background color, etc. It doesn't have any limitations on your game. You can also enable the `debug` mode to debug your games more easily.
 - Mouse event fully supported.
-  Although we use canvas and the layer concept is abstract, you can also control the mouse event easily. [This layer example](https://github.com/linsyking/messenger-examples/tree/main/layers) shows that it is possible to block the mouse event. The core mechanism is that **the order of rendering layers/components/etc. is reversed from the order of updating them**. That is to say, the topmost object will be rendered last but be updated first, so you can choose to block the mouse event in the topmost object so that the other objects below it won't see the mouse event. In the example above, when you click on the white circle zone, only the green rectangle can receive the click message.
+  Although we use canvas and the layer concept is abstract, you can also control the mouse event easily. [This layer example](https://github.com/linsyking/messenger-examples/tree/main/layers) shows that it is possible to block the mouse event. The core mechanism is that **the order of rendering layers/components/etc. is opposite to the order of updating them**. That is to say, the topmost object will be rendered last but will be updated first, so you can choose to block the mouse event in the topmost object so that the other objects below it won't see the mouse event. In the example above, when you click on the white circle zone, only the green rectangle can receive the click message.
   ![](docs/imgs/layer.png)
   It's also possible to make a drawing game, thanks to the [elm-canvas](https://github.com/joakin/elm-canvas/tree/5.0.0) package (however the original project doesn't update anymore so we use a fork project). See [the simple paint](https://chimeces.com/elm-canvas/drawing.html). More examples can be found on [examples](https://chimeces.com/elm-canvas/). If you need that you may need to add custom mouse events to the subscriptions in `Main.elm`.
 

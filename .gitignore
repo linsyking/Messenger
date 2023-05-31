@@ -3,3 +3,6 @@ test/
 *.egg-info/
 dist/
 *__pycache__/
+docs/*
+!docs/doc.pdf
+!docs/imgs

@@ -13,7 +13,7 @@ from .updater import Updater
 from .patcher import patch
 
 app = typer.Typer(add_completion=False, help="Messenger CLI")
-API_VERSION = "0.2.4"
+API_VERSION = "0.2.5"
 
 
 class Messenger:
@@ -29,7 +29,9 @@ class Messenger:
             if "version" not in self.config:
                 raise Exception("Messenger API version not found in the config file.")
             if self.config["version"] != API_VERSION:
-                raise Exception(f"Messenger API version not matched. I'm using v{API_VERSION}. You can edit messenger.json manually to upgrade.")
+                raise Exception(
+                    f"Messenger API version not matched. I'm using v{API_VERSION}. You can edit messenger.json manually to upgrade."
+                )
         else:
             raise Exception(
                 "messenger.json not found. Are you in the project initialized by the Messenger? Try `messenger init <your-project-name>`."
@@ -37,7 +39,6 @@ class Messenger:
         if not os.path.exists(".messenger"):
             print("Messenger files not found. Initializing...")
             os.system(f"git clone {self.config['template_repo']} .messenger --depth=1")
-
 
     def dump_config(self):
         with open("messenger.json", "w") as f:
@@ -258,18 +259,29 @@ class Messenger:
             [".messenger/sceneproto/Export.elm"], [f"src/Scenes/{level}/Export.elm"]
         ).rep(level).rep(sceneproto)
 
-    def add_component(self, name: str):
+    def add_component(self, name: str, dir=""):
         """
         Add a component
         """
-        os.mkdir(f"src/Components/{name}")
+        from os.path import join
+
+        if not os.path.exists(join("src/Components", dir)):
+            raise Exception("Directory doesn't exist.")
+        if os.path.exists(join("src/Components", dir, name)):
+            raise Exception("Component already exists.")
+        dir = join(dir, name)
+        os.mkdir(join("src/Components", dir))
+        modPath = dir.replace("/", ".")
         Updater(
             [
                 ".messenger/component/Sample/Sample.elm",
                 ".messenger/component/Sample/Export.elm",
             ],
-            [f"src/Components/{name}/{name}.elm", f"src/Components/{name}/Export.elm"],
-        ).rep(name)
+            [
+                join("src/Components", dir, f"{name}.elm"),
+                join("src/Components", dir, "Export.elm"),
+            ],
+        ).rep(modPath).rep(name)
 
     def add_gamecomponent(self, sceneproto: str, gc: str):
         """
@@ -418,7 +430,12 @@ Press Enter to continue
     os.makedirs("src/SceneProtos", exist_ok=True)
 
     print("Creating elm.json...")
-    initObject = {"version": API_VERSION, "template_repo" : template_repo, "scenes": {}, "sceneprotos": {}}
+    initObject = {
+        "version": API_VERSION,
+        "template_repo": template_repo,
+        "scenes": {},
+        "sceneprotos": {},
+    }
     with open("messenger.json", "w") as f:
         json.dump(initObject, f, indent=4, ensure_ascii=False)
     print("Installing dependencies...")
@@ -428,10 +445,15 @@ Press Enter to continue
 
 
 @app.command()
-def component(name: str):
+def component(
+    name: str,
+    dir=typer.Option(
+        "", "--dir", "-d", help="Component module to create component in."
+    ),
+):
     msg = Messenger()
     input(f"You are going to create a component named {name}, continue?")
-    msg.add_component(name)
+    msg.add_component(name, dir)
     msg.format()
     print("Done!")
 
@@ -439,8 +461,15 @@ def component(name: str):
 @app.command()
 def update(
     scene=typer.Option(False, "--scene", "-s", help="Update scenes."),
-    scenelayer=typer.Option(None, "--scenelayer", "-sl", help="Update layers in that scene."),
-    sceneprotolayer=typer.Option(None, "--sceneprotolayer", "-spl", help="Update sceneproto layers in that sceneproto."),
+    scenelayer=typer.Option(
+        None, "--scenelayer", "-sl", help="Update layers in that scene."
+    ),
+    sceneprotolayer=typer.Option(
+        None,
+        "--sceneprotolayer",
+        "-spl",
+        help="Update sceneproto layers in that sceneproto.",
+    ),
 ):
     msg = Messenger()
     input(
@@ -535,6 +564,7 @@ def updatelib():
     patch()
     msg.format()
     print("Done!")
+
 
 if __name__ == "__main__":
     app()

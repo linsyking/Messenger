@@ -12,9 +12,10 @@ def patch():
     repo = Repo(".messenger")
     oldsha = repo.head.commit.hexsha
     print(f"Current commit: {oldsha}")
-    remote = repo.remote()
     print(f"Pulling...")
-    remote.pull()
+    os.chdir(".messenger")
+    os.system("git pull")
+    os.chdir("..")
     newsha = repo.head.commit.hexsha
     print(f"Current commit: {newsha}")
     if newsha == oldsha:

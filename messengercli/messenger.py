@@ -13,7 +13,7 @@ from .updater import Updater
 from .patcher import patch
 
 app = typer.Typer(add_completion=False, help="Messenger CLI")
-API_VERSION = "0.2.5"
+API_VERSION = "0.2.6"
 
 
 class Messenger:
@@ -30,7 +30,7 @@ class Messenger:
                 raise Exception("Messenger API version not found in the config file.")
             if self.config["version"] != API_VERSION:
                 raise Exception(
-                    f"Messenger API version not matched. I'm using v{API_VERSION}. You can edit messenger.json manually to upgrade."
+                    f"Messenger API version not matched. I'm using v{API_VERSION}. You can edit messenger.json manually to upgrade/downgrade."
                 )
         else:
             raise Exception(
@@ -392,6 +392,16 @@ class Messenger:
         )
 
 
+def check_name(name: str):
+    """
+    Check if the the first character of the name is Capital
+    """
+    if name[0].islower():
+        return name[0].capitalize() + name[1:]
+    else:
+        return name
+
+
 @app.command()
 def init(
     name: str,
@@ -451,6 +461,7 @@ def component(
         "", "--dir", "-d", help="Component module to create component in."
     ),
 ):
+    name = check_name(name)
     msg = Messenger()
     input(f"You are going to create a component named {name}, continue?")
     msg.add_component(name, dir)
@@ -487,6 +498,7 @@ def update(
 
 @app.command()
 def scene(name: str):
+    name = check_name(name)
     msg = Messenger()
     input(f"You are going to create a scene named {name}, continue?")
     msg.add_scene(name)
@@ -503,6 +515,8 @@ def layer(
         False, "--with-component", "-c", help="Use components in this layer"
     ),
 ):
+    scene = check_name(scene)
+    layer = check_name(layer)
     msg = Messenger()
     input(
         f"You are going to create a layer named {layer} under scene {scene}, continue?"
@@ -515,6 +529,7 @@ def layer(
 
 @app.command()
 def sceneproto(sceneproto: str):
+    sceneproto = check_name(sceneproto)
     msg = Messenger()
     input(f"You are going to create a sceneproto named {sceneproto}, continue?")
     msg.add_sceneproto(sceneproto)
@@ -524,6 +539,8 @@ def sceneproto(sceneproto: str):
 
 @app.command()
 def level(sceneproto: str, level: str):
+    sceneproto = check_name(sceneproto)
+    level = check_name(level)
     msg = Messenger()
     input(
         f"You are going to create a level named {level} under sceneproto {sceneproto}, continue?"
@@ -536,6 +553,8 @@ def level(sceneproto: str, level: str):
 
 @app.command()
 def protolayer(sceneproto: str, layer: str):
+    sceneproto = check_name(sceneproto)
+    layer = check_name(layer)
     msg = Messenger()
     input(
         f"You are going to create a layer named {layer} under sceneproto {sceneproto}, continue?"
@@ -548,6 +567,8 @@ def protolayer(sceneproto: str, layer: str):
 
 @app.command()
 def gamecomponent(sceneproto: str, gc: str):
+    sceneproto = check_name(sceneproto)
+    gc = check_name(gc)
     msg = Messenger()
     input(
         f"You are going to create a game component named {gc} under sceneproto {sceneproto}, continue?"

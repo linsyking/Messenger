@@ -265,12 +265,10 @@ class Messenger:
         """
         from os.path import join
 
-        if not os.path.exists(join("src/Components", dir)):
-            raise Exception("Directory doesn't exist.")
         if os.path.exists(join("src/Components", dir, name)):
             raise Exception("Component already exists.")
         dir = join(dir, name)
-        os.mkdir(join("src/Components", dir))
+        os.makedirs(join("src/Components", dir), exist_ok=True)
         modPath = dir.replace("/", ".")
         Updater(
             [
@@ -290,7 +288,7 @@ class Messenger:
         if sceneproto not in self.config["sceneprotos"]:
             raise Exception("SceneProto doesn't exist.")
 
-        os.mkdir(f"src/SceneProtos/{sceneproto}/GameComponents/{gc}")
+        os.makedirs(f"src/SceneProtos/{sceneproto}/GameComponents/{gc}", exist_ok=True)
         Updater(
             [
                 ".messenger/sceneproto/gamecomponent/Sample/Base.elm",

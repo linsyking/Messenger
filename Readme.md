@@ -7,6 +7,7 @@ Messenger is **not** an elm package, it is a framework so some code will be gene
 ## Games made with Messenger
 
 - [Reweave](https://github.com/linsyking/Reweave)
+- [SilverFOCS Games](https://focs.ji.sjtu.edu.cn/silverfocs/project/2023/p2) (2023)
 - Waiting for your project!
 
 I recommend you to play the game Reweave. There are many examples explained with Reweave in the documentation.

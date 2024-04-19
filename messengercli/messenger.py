@@ -463,6 +463,12 @@ def init(
         "-t",
         help="Use customized repository for cloning templates.",
     ),
+    template_tag=typer.Option(
+        None,
+        "--template-tag",
+        "-b",
+        help="Judge the tag or branch of the repository that you want to clone"
+    )
 ):
     input(
         f"""Thanks for using Messenger v{API_VERSION}.
@@ -478,7 +484,10 @@ Press Enter to continue
     )
     os.makedirs(name, exist_ok=True)
     os.chdir(name)
-    os.system(f"git clone {template_repo} .messenger --depth=1")
+    if template_tag:
+        os.system(f"git clone -b {template_tag} {template_repo} .messenger --depth=1")
+    else:
+        os.system(f"git clone {template_repo} .messenger --depth=1")
     shutil.copytree(".messenger/src/", "./src")
     shutil.copytree(".messenger/public/", "./public")
     shutil.copy(".messenger/.gitignore", "./.gitignore")

@@ -157,6 +157,7 @@ class Messenger:
                 ".messenger/sceneproto/scene/SceneInit.elm",
                 ".messenger/sceneproto/gamecomponent/Base.elm",
                 ".messenger/sceneproto/gamecomponent/Handler.elm",
+                ".messenger/sceneproto/gamecomponent/GameComponentSettings.elm",
             ],
             [
                 f"src/SceneProtos/{scene}/Export.elm",
@@ -166,6 +167,7 @@ class Messenger:
                 f"src/SceneProtos/{scene}/SceneInit.elm",
                 f"src/SceneProtos/{scene}/GameComponent/Base.elm",
                 f"src/SceneProtos/{scene}/GameComponent/Handler.elm",
+                f"src/SceneProtos/{scene}/GameComponents/GameComponentSettings.elm"
             ],
         ).rep(scene)
 
@@ -263,12 +265,13 @@ class Messenger:
         """
         Add a component
         """
-        from os.path import join
+        from os.path import join as p_join
 
-        if os.path.exists(join("src/Components", dir, name)):
+        if os.path.exists(p_join("src/Components", dir, name)):
             raise Exception("Component already exists.")
-        dir = join(dir, name)
-        os.makedirs(join("src/Components", dir), exist_ok=True)
+        dir = p_join(dir, name)
+
+        os.makedirs(p_join("src/Components", dir), exist_ok=True)
         modPath = dir.replace("/", ".")
         Updater(
             [
@@ -276,10 +279,36 @@ class Messenger:
                 ".messenger/component/Sample/Export.elm",
             ],
             [
-                join("src/Components", dir, f"{name}.elm"),
-                join("src/Components", dir, "Export.elm"),
+                p_join("src/Components", dir, f"{name}.elm"),
+                p_join("src/Components", dir, "Export.elm"),
             ],
         ).rep(modPath).rep(name)
+
+        # Modify component settings
+        if not os.path.exists("src/Components/ComponentSettings.elm"):
+            shutil.copy(".messenger/component/ComponentSettings.elm", "./src/Components/ComponentSettings.elm")
+
+        with open("src/Components/ComponentSettings.elm", "r") as f:
+            cSettings = f.read()
+        new_cSettings = cSettings.replace(
+            ", ComponentT",
+            f", ComponentT\n    , {name}Data, null{name}Data"
+        ).replace(
+            "@docs ComponentType\n@docs ComponentT",
+            f"@docs ComponentType\n@docs ComponentT\n@docs {name}Data, null{name}Data"
+        ).replace(
+            "type ComponentType\n    =",
+            f"type ComponentType\n    = C{name}Data {name}Data\n    |"
+        )
+        with open("src/Components/ComponentSettings.elm", "w") as f:
+            f.write(new_cSettings)
+
+        proto = ["\n", "\n", f"--- {name}Data ---\n"] \
+        + ["\n", "\n", f"type alias {name}Data =\n", "   {}\n"] \
+        + ["\n", "\n", f"null{name}Data : {name}Data\n", f"null{name}Data =\n", "   {}\n", "\n"]
+        with open("src/Components/ComponentSettings.elm", "a") as f:
+            f.writelines(proto)
+
 
     def add_gamecomponent(self, sceneproto: str, gc: str):
         """
@@ -314,6 +343,29 @@ class Messenger:
         )
         with open(f"src/SceneProtos/{sceneproto}/GameComponent/Base.elm", "w") as f:
             f.write(new_scenebase)
+        
+        # Modify gamecomponent settings
+        with open(f"src/SceneProtos/{sceneproto}/GameComponents/GameComponentSettings.elm", "r") as f:
+            gcSettings = f.read()
+        new_gcSettings = gcSettings.replace(
+            ", GameComponentT",
+            f", GameComponentT\n    , {gc}Data, null{gc}Data"
+        ).replace(
+            "@docs GameComponentType\n@docs GameComponentT",
+            f"@docs GameComponentType\n@docs GameComponentT\n@docs {gc}Data, null{gc}Data"
+        ).replace(
+            "type GameComponentType\n    =",
+            f"type GameComponentType\n    = GC{gc}Data {gc}Data\n    |"
+        )
+        with open(f"src/SceneProtos/{sceneproto}/GameComponents/GameComponentSettings.elm", "w") as f:
+            f.write(new_gcSettings)
+
+        proto = ["\n", "\n", f"--- {gc}Data ---\n"] \
+        + ["\n", "\n", f"type alias {gc}Data =\n", "   { alive : Bool }\n"] \
+        + ["\n", "\n", f"null{gc}Data : {gc}Data\n", f"null{gc}Data =\n", "   { alive = True }\n", "\n"]
+        with open(f"src/SceneProtos/{sceneproto}/GameComponents/GameComponentSettings.elm", "a") as f:
+            f.writelines(proto)
+
 
     def format(self):
         os.system("elm-format src/ --yes")
@@ -345,6 +397,8 @@ class Messenger:
             ],
         ).rep(scene).rep(layer)
         if has_component:
+            if not os.path.exists("src/Components/ComponentSettings.elm"):
+                shutil.copy(".messenger/component/ComponentSettings.elm", "./src/Components/ComponentSettings.elm")
             Updater(
                 [
                     ".messenger/layer/Model_C.elm",

@@ -272,7 +272,7 @@ class Messenger:
         dir = p_join(dir, name)
 
         os.makedirs(p_join("src/Components", dir), exist_ok=True)
-        modPath = dir.replace("/", ".")
+        modPath = dir.replace("/", ".").replace("\\",".")
         Updater(
             [
                 ".messenger/component/Sample/Sample.elm",

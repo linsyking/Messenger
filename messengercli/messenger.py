@@ -310,6 +310,70 @@ class Messenger:
             f.writelines(proto)
 
 
+    def copy_component(self, pth: str, cmpt:str, cmpt_pth:str, dir: str=""):
+        if not os.path.exists(pth):
+            raise Exception(f"Path: {pth} does not exist")
+        if not os.path.exists(os.path.join(pth, "src/Components", cmpt_pth)):
+            raise Exception(f"Component {cmpt_pth} does not exist\n if the target component is a sub component, please use format: parent/sub")
+        if os.path.exists(os.path.join("src/Components", dir, cmpt)):
+            raise Exception("Component already exists.")
+        full_dir = os.path.join("src/Components", dir, cmpt)
+        shutil.copytree(os.path.join(pth, "src/Components", cmpt_pth), full_dir)
+
+        if not os.path.exists("src/Components/ComponentSettings.elm"):
+            shutil.copy(".messenger/component/ComponentSettings.elm", "./src/Components/ComponentSettings.elm")
+        
+        orgPath = cmpt_pth.replace("/", ".")
+        modPath = os.path.join(dir, cmpt).replace("/", ".").replace("\\", ".")
+        self.__copy_sub_cmpt(pth, cmpt, cmpt_pth, orgPath, modPath, full_dir)
+
+
+    def __copy_sub_cmpt(self, pth: str, cmpt: str, cmpt_pth: str, orgPath: str, modPath: str, tgtdir: str):
+        dir = os.path.join(pth, "src/Components", cmpt_pth)
+        for item in os.listdir(dir):
+            if os.path.isdir(os.path.join(dir, item)):
+                self.__copy_sub_cmpt(pth, item, os.path.join(dir, item), orgPath, modPath, os.path.join(tgtdir, item)) 
+
+        with open(os.path.join(tgtdir, f"{cmpt}.elm"), "r") as f:
+            cmptmodel = f.read()
+        with open(os.path.join(tgtdir, f"Export.elm"), "r") as f:
+            cmptexp = f.read()
+        new_cmptmodel = cmptmodel.replace(f"{orgPath}", f"{modPath}")
+        new_cmptexp = cmptexp.replace(f"{orgPath}", f"{modPath}")
+        with open(os.path.join(tgtdir, f"{cmpt}.elm"), "w") as f:
+            f.write(new_cmptmodel)
+        with open(os.path.join(tgtdir, f"Export.elm"), "w") as f:
+            f.write(new_cmptexp)          
+
+        with open("src/Components/ComponentSettings.elm", "r") as f:
+            cSettings = f.read()
+        new_cSettings = cSettings.replace(
+            ", ComponentT",
+            f", ComponentT\n    , {cmpt}Data, null{cmpt}Data"
+        ).replace(
+            "@docs ComponentType\n@docs ComponentT",
+            f"@docs ComponentType\n@docs ComponentT\n@docs {cmpt}Data, null{cmpt}Data"
+        ).replace(
+            "type ComponentType\n    =",
+            f"type ComponentType\n    = C{cmpt}Data {cmpt}Data\n    |"
+        )
+        with open("src/Components/ComponentSettings.elm", "w") as f:
+            f.write(new_cSettings)
+        
+        with open(os.path.join(pth, "src/Components/ComponentSettings.elm"), "r") as f:
+            cp_cSettings = f.read()
+        start = cp_cSettings.find(f"--- {cmpt}Data ---")
+        null_limit = cp_cSettings.find(f"null{cmpt}Data =\n")
+        end = cp_cSettings.find("    }\n", start, null_limit)
+        if end == -1:
+            end = cp_cSettings.find("}\n", null_limit) + len("}\n")
+        else:
+            end = cp_cSettings.find("    }\n", null_limit) + len("    }\n")
+        cp_data = "\n\n" + cp_cSettings[start:end]
+        with open("src/Components/ComponentSettings.elm", "a") as f:
+            f.write(cp_data)
+
+
     def add_gamecomponent(self, sceneproto: str, gc: str):
         """
         Add a GameComponent to a SceneProto
@@ -521,13 +585,39 @@ def component(
     dir=typer.Option(
         "", "--dir", "-d", help="Component module to create component in."
     ),
+    copy_from: str=typer.Option(
+        None,
+        "--copy-from",
+        "-c",
+        help="The external component you want to copy and its name must be the same as your input name (the first argument)\n \
+            format: path_of_the_project_copy_from@target_component\n \
+            if the target component is a sub component, please use format: parent/sub",
+    )
 ):
-    name = check_name(name)
-    msg = Messenger()
-    input(f"You are going to create a component named {name}, continue?")
-    msg.add_component(name, dir)
-    msg.format()
-    print("Done!")
+    if copy_from:
+        if "@" not in copy_from:
+            raise Exception("Format Error: Missing '@'\n please use: path_of_the_project_copy_from@target_component")
+        
+        path = copy_from.split("@")[0]
+        cmpt_path = copy_from.split("@")[-1]
+        cmpt = cmpt_path.split("/")[-1]
+        name = check_name(name)
+        if name != cmpt:
+            raise Exception("Name Error: your first argument must be the same of the component you want to copy")
+        
+        msg = Messenger()
+        input(f"You are going to copy a component named {cmpt} from {path}, continue?")
+        msg.copy_component(path, cmpt, cmpt_path, dir)
+        msg.format()
+        print("Done!")
+
+    else:
+        name = check_name(name)
+        msg = Messenger()
+        input(f"You are going to create a component named {name}, continue?")
+        msg.add_component(name, dir)
+        msg.format()
+        print("Done!")
 
 
 @app.command()

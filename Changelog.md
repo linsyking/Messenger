@@ -2,6 +2,12 @@
 
 This changelog only contains changes in CLI tools of Messenger. See [Changelog](https://github.com/linsyking/messenger-templates/blob/main/Changelog.md) for changelog of Messenger templates.
 
+## 0.3.0
+
+### Changes
+
+- Change template to the new messenger architecture
+
 ## 0.2.5
 
 ### Features

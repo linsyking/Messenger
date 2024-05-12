@@ -6,3 +6,4 @@ dist/
 docs/*
 !docs/doc.pdf
 !docs/imgs
+env/

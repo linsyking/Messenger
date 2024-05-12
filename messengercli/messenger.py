@@ -76,10 +76,15 @@ class Messenger:
         """
         Add a component
         """
-        from os.path import join as p_join
+        
+        if scene not in self.config["scenes"]:
+            raise Exception("Scene doesn't exist.")
 
         if os.path.exists(f"src/Scenes/{scene}/Components/{name}"):
             raise Exception("Component already exists.")
+
+        if not os.path.exists(f"src/Scenes/{scene}/Components"):
+            os.mkdir(f"src/Scenes/{scene}/Components")
 
         if not os.path.exists(f"src/Scenes/{scene}/Components/ComponentBase.elm"):
             Updater(
@@ -194,7 +199,7 @@ def component(name: str, scene: str):
     name = check_name(name)
     scene = check_name(scene)
     msg = Messenger()
-    input(f"You are going to create a component named {name}, continue?")
+    input(f"You are going to create a component named {name} in {scene}, continue?")
     msg.add_component(name, scene)
     msg.format()
     print("Done!")

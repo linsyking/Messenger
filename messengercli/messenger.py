@@ -195,7 +195,7 @@ Press Enter to continue
 
 
 @app.command()
-def component(name: str, scene: str):
+def component(scene: str, name: str):
     name = check_name(name)
     scene = check_name(scene)
     msg = Messenger()

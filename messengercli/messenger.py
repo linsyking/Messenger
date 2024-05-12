@@ -76,7 +76,7 @@ class Messenger:
         """
         Add a component
         """
-        
+
         if scene not in self.config["scenes"]:
             raise Exception("Scene doesn't exist.")
 
@@ -115,20 +115,39 @@ class Messenger:
             raise Exception("Scene doesn't exist.")
         if layer in self.config["scenes"][scene]:
             raise Exception("Layer already exists.")
+        if has_component and not os.path.exists(
+            f"src/Scenes/{scene}/Components/ComponentBase.elm"
+        ):
+            raise Exception("Please first create a component.")
         self.config["scenes"][scene].append(layer)
         self.dump_config()
         os.mkdir(f"src/Scenes/{scene}/{layer}")
-
         Updater(
             [
-                ".messenger/layer/Model.elm",
                 ".messenger/layer/Msg.elm",
             ],
             [
-                f"src/Scenes/{scene}/{layer}/Model.elm",
                 f"src/Scenes/{scene}/{layer}/Msg.elm",
             ],
         ).rep(scene).rep(layer)
+        if has_component:
+            Updater(
+                [
+                    ".messenger/layer/ModelC.elm",
+                ],
+                [
+                    f"src/Scenes/{scene}/{layer}/Model.elm",
+                ],
+            ).rep(scene).rep(layer)
+        else:
+            Updater(
+                [
+                    ".messenger/layer/Model.elm",
+                ],
+                [
+                    f"src/Scenes/{scene}/{layer}/Model.elm",
+                ],
+            ).rep(scene).rep(layer)
 
 
 def check_name(name: str):

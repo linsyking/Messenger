@@ -215,11 +215,10 @@ def component(scene: str, name: str):
 
 
 @app.command()
-def update(scene=typer.Option(False, "--scene", "-s", help="Update scenes.")):
+def update():
     msg = Messenger()
     input(f"You are going to regenerate elm files based on settings, continue?")
-    if scene:
-        msg.update_scenes()
+    msg.update_scenes()
     msg.format()
     print("Done!")
 

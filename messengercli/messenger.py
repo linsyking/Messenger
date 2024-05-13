@@ -96,11 +96,9 @@ class Messenger:
         Updater(
             [
                 ".messenger/component/UserComponent/Model.elm",
-                ".messenger/component/UserComponent/Msg.elm",
             ],
             [
                 f"src/Scenes/{scene}/Components/{name}/Model.elm",
-                f"src/Scenes/{scene}/Components/{name}/Msg.elm",
             ],
         ).rep(scene).rep(name)
 
@@ -122,14 +120,6 @@ class Messenger:
         self.config["scenes"][scene].append(layer)
         self.dump_config()
         os.mkdir(f"src/Scenes/{scene}/{layer}")
-        Updater(
-            [
-                ".messenger/layer/Msg.elm",
-            ],
-            [
-                f"src/Scenes/{scene}/{layer}/Msg.elm",
-            ],
-        ).rep(scene).rep(layer)
         if has_component:
             Updater(
                 [

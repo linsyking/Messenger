@@ -167,7 +167,7 @@ def init(
     ),
 ):
     input(
-        f"""Thanks for using Messenger v{API_VERSION}.
+        f"""Thanks for using Messenger.
 See https://github.com/linsyking/Messenger.git for more information.
 Here is my plan:
 

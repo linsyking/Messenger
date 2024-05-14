@@ -54,7 +54,7 @@ class Messenger:
                 Updater(
                     [".messenger/sceneproto/Raw/Model.elm"],
                     [f"src/SceneProtos/{scene}/Model.elm"],
-                ).rep("SceneProtos").rep(scene)
+                ).rep(scene)
             else:
                 Updater(
                     [
@@ -65,7 +65,7 @@ class Messenger:
                         f"src/SceneProtos/{scene}/Model.elm",
                         f"src/SceneProtos/{scene}/LayerBase.elm",
                     ],
-                ).rep("SceneProtos").rep(scene)
+                ).rep(scene)
         else:
             if scene in self.config["scenes"]:
                 raise Exception("Scene already exists.")

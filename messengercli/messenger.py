@@ -43,13 +43,48 @@ class Messenger:
         with open("messenger.json", "w") as f:
             json.dump(self.config, f, indent=4, ensure_ascii=False)
 
+    def add_level(self, name: str, sceneproto: str):
+        """
+        Add a level
+        """
+        if sceneproto not in self.config["sceneprotos"]:
+            raise Exception("Sceneproto doesn't exist.")
+        if name in self.config["scenes"]:
+            raise Exception("Level or scene already exists.")
+        self.config["scenes"][name] = []
+        self.dump_config()
+        os.mkdir(f"src/Scenes/{name}")
+        raw = self.config["sceneprotos"][sceneproto]["raw"]
+        if raw:
+            Updater(
+                [".messenger/sceneproto/Raw/Level.elm"],
+                [f"src/Scenes/{name}/Model.elm"],
+            ).rep(name).rep(sceneproto)
+        else:
+            Updater(
+                [".messenger/sceneproto/Layered/Level.elm"],
+                [f"src/Scenes/{name}/Model.elm"],
+            ).rep(name).rep(sceneproto)
+
     def add_scene(self, scene: str, raw: bool, is_proto: bool):
+        """
+        Add a scene
+        """
         if is_proto:
+            if not os.path.exists(f"src/SceneProtos"):
+                os.mkdir(f"src/SceneProtos")
             if scene in self.config["sceneprotos"]:
                 raise Exception("Sceneproto already exists.")
-            self.config["sceneprotos"][scene] = []
+            self.config["sceneprotos"][scene] = {
+                "raw": raw,
+            }
             self.dump_config()
             os.mkdir(f"src/SceneProtos/{scene}")
+
+            Updater(
+                [".messenger/sceneproto/Init.elm"],
+                [f"src/SceneProtos/{scene}/Init.elm"],
+            ).rep(scene)
             if raw:
                 Updater(
                     [".messenger/sceneproto/Raw/Model.elm"],
@@ -303,9 +338,10 @@ def component(
 ):
     name = check_name(name)
     scene = check_name(scene)
+    compdir = check_name(compdir)
     msg = Messenger()
     input(
-        f"You are going to create a component named {name} in {scene}/{compdir}, continue?"
+        f"You are going to create a component named {name} in {'SceneProtos' if is_proto else 'Scenes'}/{scene}/{compdir}, continue?"
     )
     msg.add_component(name, scene, compdir, is_proto)
     msg.format()
@@ -331,8 +367,22 @@ def scene(
 ):
     name = check_name(name)
     msg = Messenger()
-    input(f"You are going to create a scene named {name}, continue?")
+    input(
+        f"You are going to create a {'raw ' if raw else ''}{'sceneproto' if is_proto else 'scene'} named {name}, continue?"
+    )
     msg.add_scene(name, raw, is_proto)
+    msg.update_scenes()
+    msg.format()
+    print("Done!")
+
+
+@app.command()
+def level(name: str, sceneproto: str):
+    name = check_name(name)
+    sceneproto = check_name(sceneproto)
+    msg = Messenger()
+    input(f"You are going to create a level named {name} in {sceneproto}, continue?")
+    msg.add_level(name, sceneproto)
     msg.update_scenes()
     msg.format()
     print("Done!")
@@ -353,7 +403,7 @@ def layer(
     layer = check_name(layer)
     msg = Messenger()
     input(
-        f"You are going to create a layer named {layer} under scene {scene}, continue?"
+        f"You are going to create a layer named {layer} under {'sceneproto' if is_proto else 'scene'} {scene}, continue?"
     )
     msg.add_layer(scene, layer, has_component, is_proto)
     msg.format()

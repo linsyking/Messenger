@@ -59,7 +59,7 @@ class Messenger:
                 Updater(
                     [
                         ".messenger/sceneproto/Layered/Model.elm",
-                        ".messenger/scene/LayerBase.elm",
+                        ".messenger/sceneproto/LayerBase.elm",
                     ],
                     [
                         f"src/SceneProtos/{scene}/Model.elm",
@@ -76,7 +76,7 @@ class Messenger:
                 Updater(
                     [".messenger/scene/Raw/Model.elm"],
                     [f"src/Scenes/{scene}/Model.elm"],
-                ).rep("Scenes").rep(scene)
+                ).rep(scene)
             else:
                 Updater(
                     [
@@ -87,7 +87,7 @@ class Messenger:
                         f"src/Scenes/{scene}/Model.elm",
                         f"src/Scenes/{scene}/LayerBase.elm",
                     ],
-                ).rep("Scenes").rep(scene)
+                ).rep(scene)
 
     def update_scenes(self):
         """
@@ -116,7 +116,7 @@ class Messenger:
                 Updater(
                     [".messenger/component/ComponentBase.elm"],
                     [f"src/SceneProtos/{scene}/{dir}/ComponentBase.elm"],
-                ).rep("SceneProtos").rep(scene)
+                ).rep("SceneProtos").rep(scene).rep(dir)
 
             os.makedirs(f"src/SceneProtos/{scene}/{dir}/{name}", exist_ok=True)
             Updater(
@@ -126,7 +126,7 @@ class Messenger:
                 [
                     f"src/SceneProtos/{scene}/{dir}/{name}/Model.elm",
                 ],
-            ).rep("SceneProtos").rep(scene).rep(name)
+            ).rep("SceneProtos").rep(scene).rep(dir).rep(name)
         else:
             if scene not in self.config["scenes"]:
                 raise Exception("Scene doesn't exist.")
@@ -141,7 +141,7 @@ class Messenger:
                 Updater(
                     [".messenger/component/ComponentBase.elm"],
                     [f"src/Scenes/{scene}/{dir}/ComponentBase.elm"],
-                ).rep("Scenes").rep(scene)
+                ).rep("Scenes").rep(scene).rep(dir)
 
             os.makedirs(f"src/Scenes/{scene}/{dir}/{name}", exist_ok=True)
             Updater(
@@ -151,7 +151,7 @@ class Messenger:
                 [
                     f"src/Scenes/{scene}/{dir}/{name}/Model.elm",
                 ],
-            ).rep("Scenes").rep(scene).rep(name)
+            ).rep("Scenes").rep(scene).rep(dir).rep(name)
 
     def format(self):
         os.system("elm-format src/ --yes")

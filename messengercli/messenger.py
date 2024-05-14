@@ -76,7 +76,7 @@ class Messenger:
                 Updater(
                     [".messenger/scene/Raw/Model.elm"],
                     [f"src/Scenes/{scene}/Model.elm"],
-                ).rep(scene)
+                ).rep("Scenes").rep(scene)
             else:
                 Updater(
                     [
@@ -87,7 +87,7 @@ class Messenger:
                         f"src/Scenes/{scene}/Model.elm",
                         f"src/Scenes/{scene}/LayerBase.elm",
                     ],
-                ).rep(scene)
+                ).rep("Scenes").rep(scene)
 
     def update_scenes(self):
         """
@@ -98,72 +98,128 @@ class Messenger:
             "\n".join([f"import Scenes.{l}.Model as {l}" for l in scenes])
         ).rep(",\n".join([f'( "{l}", {l}.scene )' for l in scenes]))
 
-    def add_component(self, name: str, scene: str, dir: str):
+    def add_component(self, name: str, scene: str, dir: str, is_proto: bool):
         """
         Add a component
         """
+        if is_proto:
+            if scene not in self.config["sceneprotos"]:
+                raise Exception("Sceneproto doesn't exist.")
 
-        if scene not in self.config["scenes"]:
-            raise Exception("Scene doesn't exist.")
+            if os.path.exists(f"src/SceneProtos/{scene}/{dir}/{name}"):
+                raise Exception("Component already exists.")
 
-        if os.path.exists(f"src/Scenes/{scene}/{dir}/{name}"):
-            raise Exception("Component already exists.")
+            if not os.path.exists(f"src/SceneProtos/{scene}/{dir}"):
+                os.mkdir(f"src/SceneProtos/{scene}/{dir}")
 
-        if not os.path.exists(f"src/Scenes/{scene}/{dir}"):
-            os.mkdir(f"src/Scenes/{scene}/{dir}")
+            if not os.path.exists(f"src/SceneProtos/{scene}/{dir}/ComponentBase.elm"):
+                Updater(
+                    [".messenger/component/ComponentBase.elm"],
+                    [f"src/SceneProtos/{scene}/{dir}/ComponentBase.elm"],
+                ).rep("SceneProtos").rep(scene)
 
-        if not os.path.exists(f"src/Scenes/{scene}/{dir}/ComponentBase.elm"):
+            os.makedirs(f"src/SceneProtos/{scene}/{dir}/{name}", exist_ok=True)
             Updater(
-                [".messenger/component/ComponentBase.elm"],
-                [f"src/Scenes/{scene}/{dir}/ComponentBase.elm"],
-            ).rep(scene)
+                [
+                    ".messenger/component/UserComponent/Model.elm",
+                ],
+                [
+                    f"src/SceneProtos/{scene}/{dir}/{name}/Model.elm",
+                ],
+            ).rep("SceneProtos").rep(scene).rep(name)
+        else:
+            if scene not in self.config["scenes"]:
+                raise Exception("Scene doesn't exist.")
 
-        os.makedirs(f"src/Scenes/{scene}/{dir}/{name}", exist_ok=True)
-        Updater(
-            [
-                ".messenger/component/UserComponent/Model.elm",
-            ],
-            [
-                f"src/Scenes/{scene}/{dir}/{name}/Model.elm",
-            ],
-        ).rep(scene).rep(name)
+            if os.path.exists(f"src/Scenes/{scene}/{dir}/{name}"):
+                raise Exception("Component already exists.")
+
+            if not os.path.exists(f"src/Scenes/{scene}/{dir}"):
+                os.mkdir(f"src/Scenes/{scene}/{dir}")
+
+            if not os.path.exists(f"src/Scenes/{scene}/{dir}/ComponentBase.elm"):
+                Updater(
+                    [".messenger/component/ComponentBase.elm"],
+                    [f"src/Scenes/{scene}/{dir}/ComponentBase.elm"],
+                ).rep("Scenes").rep(scene)
+
+            os.makedirs(f"src/Scenes/{scene}/{dir}/{name}", exist_ok=True)
+            Updater(
+                [
+                    ".messenger/component/UserComponent/Model.elm",
+                ],
+                [
+                    f"src/Scenes/{scene}/{dir}/{name}/Model.elm",
+                ],
+            ).rep("Scenes").rep(scene).rep(name)
 
     def format(self):
         os.system("elm-format src/ --yes")
 
-    def add_layer(self, scene: str, layer: str, has_component: bool):
+    def add_layer(self, scene: str, layer: str, has_component: bool, is_proto: bool):
         """
         Add a layer to a scene
         """
-        if scene not in self.config["scenes"]:
-            raise Exception("Scene doesn't exist.")
-        if layer in self.config["scenes"][scene]:
-            raise Exception("Layer already exists.")
-        if has_component and not os.path.exists(
-            f"src/Scenes/{scene}/{dir}/ComponentBase.elm"
-        ):
-            raise Exception("Please first create a component.")
-        self.config["scenes"][scene].append(layer)
-        self.dump_config()
-        os.mkdir(f"src/Scenes/{scene}/{layer}")
-        if has_component:
-            Updater(
-                [
-                    ".messenger/layer/ModelC.elm",
-                ],
-                [
-                    f"src/Scenes/{scene}/{layer}/Model.elm",
-                ],
-            ).rep(scene).rep(layer)
+        if is_proto:
+            if scene not in self.config["sceneprotos"]:
+                raise Exception("Scene doesn't exist.")
+            if layer in self.config["sceneprotos"][scene]:
+                raise Exception("Layer already exists.")
+            if has_component and not os.path.exists(
+                f"src/SceneProtos/{scene}/{dir}/ComponentBase.elm"
+            ):
+                raise Exception("Please first create a component.")
+            self.config["sceneprotos"][scene].append(layer)
+            self.dump_config()
+            os.mkdir(f"src/SceneProtos/{scene}/{layer}")
+            if has_component:
+                Updater(
+                    [
+                        ".messenger/layer/ModelC.elm",
+                    ],
+                    [
+                        f"src/SceneProtos/{scene}/{layer}/Model.elm",
+                    ],
+                ).rep("SceneProtos").rep(scene).rep(layer)
+            else:
+                Updater(
+                    [
+                        ".messenger/layer/Model.elm",
+                    ],
+                    [
+                        f"src/SceneProtos/{scene}/{layer}/Model.elm",
+                    ],
+                ).rep("SceneProtos").rep(scene).rep(layer)
         else:
-            Updater(
-                [
-                    ".messenger/layer/Model.elm",
-                ],
-                [
-                    f"src/Scenes/{scene}/{layer}/Model.elm",
-                ],
-            ).rep(scene).rep(layer)
+            if scene not in self.config["scenes"]:
+                raise Exception("Scene doesn't exist.")
+            if layer in self.config["scenes"][scene]:
+                raise Exception("Layer already exists.")
+            if has_component and not os.path.exists(
+                f"src/Scenes/{scene}/{dir}/ComponentBase.elm"
+            ):
+                raise Exception("Please first create a component.")
+            self.config["scenes"][scene].append(layer)
+            self.dump_config()
+            os.mkdir(f"src/Scenes/{scene}/{layer}")
+            if has_component:
+                Updater(
+                    [
+                        ".messenger/layer/ModelC.elm",
+                    ],
+                    [
+                        f"src/Scenes/{scene}/{layer}/Model.elm",
+                    ],
+                ).rep("Scenes").rep(scene).rep(layer)
+            else:
+                Updater(
+                    [
+                        ".messenger/layer/Model.elm",
+                    ],
+                    [
+                        f"src/Scenes/{scene}/{layer}/Model.elm",
+                    ],
+                ).rep("Scenes").rep(scene).rep(layer)
 
 
 def check_name(name: str):

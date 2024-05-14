@@ -72,7 +72,7 @@ class Messenger:
             "\n".join([f"import Scenes.{l}.Model as {l}" for l in scenes])
         ).rep(",\n".join([f'( "{l}", {l}.scene )' for l in scenes]))
 
-    def add_component(self, name: str, scene: str):
+    def add_component(self, name: str, scene: str, dir: str):
         """
         Add a component
         """
@@ -80,25 +80,25 @@ class Messenger:
         if scene not in self.config["scenes"]:
             raise Exception("Scene doesn't exist.")
 
-        if os.path.exists(f"src/Scenes/{scene}/Components/{name}"):
+        if os.path.exists(f"src/Scenes/{scene}/{dir}/{name}"):
             raise Exception("Component already exists.")
 
-        if not os.path.exists(f"src/Scenes/{scene}/Components"):
-            os.mkdir(f"src/Scenes/{scene}/Components")
+        if not os.path.exists(f"src/Scenes/{scene}/{dir}"):
+            os.mkdir(f"src/Scenes/{scene}/{dir}")
 
-        if not os.path.exists(f"src/Scenes/{scene}/Components/ComponentBase.elm"):
+        if not os.path.exists(f"src/Scenes/{scene}/{dir}/ComponentBase.elm"):
             Updater(
                 [".messenger/component/ComponentBase.elm"],
-                [f"src/Scenes/{scene}/Components/ComponentBase.elm"],
+                [f"src/Scenes/{scene}/{dir}/ComponentBase.elm"],
             ).rep(scene)
 
-        os.makedirs(f"src/Scenes/{scene}/Components/{name}", exist_ok=True)
+        os.makedirs(f"src/Scenes/{scene}/{dir}/{name}", exist_ok=True)
         Updater(
             [
                 ".messenger/component/UserComponent/Model.elm",
             ],
             [
-                f"src/Scenes/{scene}/Components/{name}/Model.elm",
+                f"src/Scenes/{scene}/{dir}/{name}/Model.elm",
             ],
         ).rep(scene).rep(name)
 
@@ -114,7 +114,7 @@ class Messenger:
         if layer in self.config["scenes"][scene]:
             raise Exception("Layer already exists.")
         if has_component and not os.path.exists(
-            f"src/Scenes/{scene}/Components/ComponentBase.elm"
+            f"src/Scenes/{scene}/{dir}/ComponentBase.elm"
         ):
             raise Exception("Please first create a component.")
         self.config["scenes"][scene].append(layer)
@@ -204,12 +204,20 @@ Press Enter to continue
 
 
 @app.command()
-def component(scene: str, name: str):
+def component(
+    scene: str,
+    name: str,
+    dir: str = typer.Option(
+        "Components", "--dir", "-d", help="Directory to store components"
+    ),
+):
     name = check_name(name)
     scene = check_name(scene)
     msg = Messenger()
-    input(f"You are going to create a component named {name} in {scene}, continue?")
-    msg.add_component(name, scene)
+    input(
+        f"You are going to create a component named {name} in {scene}/{dir}, continue?"
+    )
+    msg.add_component(name, scene, dir)
     msg.format()
     print("Done!")
 

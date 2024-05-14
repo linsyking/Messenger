@@ -9,12 +9,9 @@ Messenger is a 2D game engine with experimental concepts for Elm based on **[can
 
 ## Cool Features
 
-- Engine in a library
-  Messenger core is built in a library.
-- Message (or event) based.
-  Faster development cycle, easier to divide work.
-- Functional, but OOP styled
-  Take advantages of both functional programming and OOP.
+- Engine in a library. Messenger core is built in a library.
+- Message (or event) based. Faster development cycle, easier to divide work.
+- Functional, but OOP styled. Take advantages of both functional programming and OOP.
 
 ## Conceptual Picture
 

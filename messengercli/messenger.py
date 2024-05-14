@@ -12,7 +12,7 @@ import json
 from .updater import Updater
 
 app = typer.Typer(add_completion=False, help="Messenger CLI")
-API_VERSION = "0.3.0"
+API_VERSION = "1.0.0"
 
 
 class Messenger:
@@ -29,7 +29,7 @@ class Messenger:
                 raise Exception("Messenger API version not found in the config file.")
             if self.config["version"] != API_VERSION:
                 raise Exception(
-                    f"Messenger API version not matched. I'm using v{API_VERSION}. You can edit messenger.json manually to upgrade/downgrade."
+                    f"Messenger configuration file API version not matched. I'm using v{API_VERSION}. You can edit messenger.json manually to upgrade/downgrade."
                 )
         else:
             raise Exception(
@@ -43,25 +43,51 @@ class Messenger:
         with open("messenger.json", "w") as f:
             json.dump(self.config, f, indent=4, ensure_ascii=False)
 
-    def add_scene(self, scene: str, raw: bool):
-        if scene in self.config["scenes"]:
-            raise Exception("Scene already exists.")
-        self.config["scenes"][scene] = []
-        self.dump_config()
-        os.mkdir(f"src/Scenes/{scene}")
-        if raw:
-            Updater(
-                [".messenger/scene/Raw/Model.elm"],
-                [f"src/Scenes/{scene}/Model.elm"],
-            ).rep(scene)
+    def add_scene(self, scene: str, raw: bool, is_proto: bool):
+        if is_proto:
+            if scene in self.config["sceneprotos"]:
+                raise Exception("Sceneproto already exists.")
+            self.config["sceneprotos"][scene] = []
+            self.dump_config()
+            os.mkdir(f"src/SceneProtos/{scene}")
+            if raw:
+                Updater(
+                    [".messenger/sceneproto/Raw/Model.elm"],
+                    [f"src/SceneProtos/{scene}/Model.elm"],
+                ).rep("SceneProtos").rep(scene)
+            else:
+                Updater(
+                    [
+                        ".messenger/sceneproto/Layered/Model.elm",
+                        ".messenger/scene/LayerBase.elm",
+                    ],
+                    [
+                        f"src/SceneProtos/{scene}/Model.elm",
+                        f"src/SceneProtos/{scene}/LayerBase.elm",
+                    ],
+                ).rep("SceneProtos").rep(scene)
         else:
-            Updater(
-                [
-                    ".messenger/scene/Layered/Model.elm",
-                    ".messenger/scene/LayerBase.elm",
-                ],
-                [f"src/Scenes/{scene}/Model.elm", f"src/Scenes/{scene}/LayerBase.elm"],
-            ).rep(scene)
+            if scene in self.config["scenes"]:
+                raise Exception("Scene already exists.")
+            self.config["scenes"][scene] = []
+            self.dump_config()
+            os.mkdir(f"src/Scenes/{scene}")
+            if raw:
+                Updater(
+                    [".messenger/scene/Raw/Model.elm"],
+                    [f"src/Scenes/{scene}/Model.elm"],
+                ).rep(scene)
+            else:
+                Updater(
+                    [
+                        ".messenger/scene/Layered/Model.elm",
+                        ".messenger/scene/LayerBase.elm",
+                    ],
+                    [
+                        f"src/Scenes/{scene}/Model.elm",
+                        f"src/Scenes/{scene}/LayerBase.elm",
+                    ],
+                ).rep(scene)
 
     def update_scenes(self):
         """
@@ -194,7 +220,12 @@ Press Enter to continue
     os.makedirs("assets", exist_ok=True)
 
     print("Creating elm.json...")
-    initObject = {"version": API_VERSION, "template_repo": template_repo, "scenes": {}}
+    initObject = {
+        "version": API_VERSION,
+        "template_repo": template_repo,
+        "scenes": {},
+        "sceneprotos": {},
+    }
     with open("messenger.json", "w") as f:
         json.dump(initObject, f, indent=4, ensure_ascii=False)
     print("Installing dependencies...")
@@ -207,17 +238,20 @@ Press Enter to continue
 def component(
     scene: str,
     name: str,
-    dir: str = typer.Option(
-        "Components", "--dir", "-d", help="Directory to store components"
+    compdir: str = typer.Option(
+        "Components", "--cdir", "-cd", help="Directory to store components"
+    ),
+    is_proto: bool = typer.Option(
+        False, "--proto", "-p", help="Create layer in sceneproto"
     ),
 ):
     name = check_name(name)
     scene = check_name(scene)
     msg = Messenger()
     input(
-        f"You are going to create a component named {name} in {scene}/{dir}, continue?"
+        f"You are going to create a component named {name} in {scene}/{compdir}, continue?"
     )
-    msg.add_component(name, scene, dir)
+    msg.add_component(name, scene, compdir, is_proto)
     msg.format()
     print("Done!")
 
@@ -235,11 +269,14 @@ def update():
 def scene(
     name: str,
     raw: bool = typer.Option(False, "--raw", help="Use raw scene without layers"),
+    is_proto: bool = typer.Option(
+        False, "--proto", "-p", help="Create layer in sceneproto"
+    ),
 ):
     name = check_name(name)
     msg = Messenger()
     input(f"You are going to create a scene named {name}, continue?")
-    msg.add_scene(name, raw)
+    msg.add_scene(name, raw, is_proto)
     msg.update_scenes()
     msg.format()
     print("Done!")
@@ -252,6 +289,9 @@ def layer(
     has_component: bool = typer.Option(
         False, "--with-component", "-c", help="Use components in this layer"
     ),
+    is_proto: bool = typer.Option(
+        False, "--proto", "-p", help="Create layer in sceneproto"
+    ),
 ):
     scene = check_name(scene)
     layer = check_name(layer)
@@ -259,7 +299,7 @@ def layer(
     input(
         f"You are going to create a layer named {layer} under scene {scene}, continue?"
     )
-    msg.add_layer(scene, layer, has_component)
+    msg.add_layer(scene, layer, has_component, is_proto)
     msg.format()
     print("Done!")
 

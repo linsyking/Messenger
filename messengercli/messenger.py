@@ -210,7 +210,7 @@ class Messenger:
                     [
                         f"src/SceneProtos/{scene}/{layer}/Model.elm",
                     ],
-                ).rep("SceneProtos").rep(scene).rep(layer)
+                ).rep("SceneProtos").rep(scene).rep(layer).rep(dir)
             else:
                 Updater(
                     [
@@ -240,7 +240,7 @@ class Messenger:
                     [
                         f"src/Scenes/{scene}/{layer}/Model.elm",
                     ],
-                ).rep("Scenes").rep(scene).rep(layer)
+                ).rep("Scenes").rep(scene).rep(layer).rep(dir)
             else:
                 Updater(
                     [

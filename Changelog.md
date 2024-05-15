@@ -2,6 +2,18 @@
 
 This changelog only contains changes in CLI tools of Messenger. See [Changelog](https://github.com/linsyking/messenger-templates/blob/main/Changelog.md) for changelog of Messenger templates.
 
+## 0.3.3
+
+### Fix
+
+- Layer with component dir parameter
+
+## 0.3.2
+
+### Features
+
+- Support Scene Prototype
+
 ## 0.3.0
 
 ### Changes

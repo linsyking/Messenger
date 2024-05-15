@@ -191,7 +191,7 @@ class Messenger:
     def format(self):
         os.system("elm-format src/ --yes")
 
-    def add_layer(self, scene: str, layer: str, has_component: bool, is_proto: bool):
+    def add_layer(self, scene: str, layer: str, has_component: bool, is_proto: bool, dir: str):
         """
         Add a layer to a scene
         """
@@ -395,6 +395,9 @@ def layer(
     has_component: bool = typer.Option(
         False, "--with-component", "-c", help="Use components in this layer"
     ),
+    compdir: str = typer.Option(
+        "Components", "--cdir", "-cd", help="Directory of components in the scene"
+    ),
     is_proto: bool = typer.Option(
         False, "--proto", "-p", help="Create layer in sceneproto"
     ),
@@ -405,7 +408,7 @@ def layer(
     input(
         f"You are going to create a layer named {layer} under {'sceneproto' if is_proto else 'scene'} {scene}, continue?"
     )
-    msg.add_layer(scene, layer, has_component, is_proto)
+    msg.add_layer(scene, layer, has_component, is_proto, compdir)
     msg.format()
     print("Done!")
 

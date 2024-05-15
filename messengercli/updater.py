@@ -1,9 +1,4 @@
 #!/usr/bin/env python3
-"""
-@Author: King
-@Date: 2023-05-12 12:34:46
-@Email: linsy_king@sjtu.edu.cn
-"""
 from __future__ import annotations
 
 

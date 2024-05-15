@@ -1,9 +1,4 @@
 #!/usr/bin/env python3
-"""
-@Author: King
-@Date: 2023-05-03 21:46:45
-@Email: linsy_king@sjtu.edu.cn
-"""
 
 import typer
 import os
@@ -20,7 +15,7 @@ class Messenger:
 
     def __init__(self) -> None:
         """
-        Check if `messager.json` exists and load it.
+        Check if `messenger.json` exists and load it.
         """
         if os.path.exists("messenger.json"):
             with open("messenger.json", "r") as f:

@@ -72,6 +72,7 @@ class Messenger:
                 raise Exception("Sceneproto already exists.")
             self.config["sceneprotos"][scene] = {
                 "raw": raw,
+                "layers": []
             }
             self.dump_config()
             os.mkdir(f"src/SceneProtos/{scene}")
@@ -199,7 +200,7 @@ class Messenger:
                 f"src/SceneProtos/{scene}/{dir}/ComponentBase.elm"
             ):
                 raise Exception("Please first create a component.")
-            self.config["sceneprotos"][scene].append(layer)
+            self.config["sceneprotos"][scene]["layers"].append(layer)
             self.dump_config()
             os.mkdir(f"src/SceneProtos/{scene}/{layer}")
             if has_component:
@@ -229,7 +230,7 @@ class Messenger:
                 f"src/Scenes/{scene}/{dir}/ComponentBase.elm"
             ):
                 raise Exception("Please first create a component.")
-            self.config["scenes"][scene].append(layer)
+            self.config["scenes"][scene]["layers"].append(layer)
             self.dump_config()
             os.mkdir(f"src/Scenes/{scene}/{layer}")
             if has_component:

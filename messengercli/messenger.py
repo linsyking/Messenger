@@ -61,7 +61,7 @@ class Messenger:
                 [f"src/Scenes/{name}/Model.elm"],
             ).rep(name).rep(sceneproto)
 
-    def add_scene(self, scene: str, raw: bool, is_proto: bool):
+    def add_scene(self, scene: str, raw: bool, is_proto: bool, init: bool):
         """
         Add a scene
         """
@@ -70,17 +70,14 @@ class Messenger:
                 os.mkdir(f"src/SceneProtos")
             if scene in self.config["sceneprotos"]:
                 raise Exception("Sceneproto already exists.")
-            self.config["sceneprotos"][scene] = {
-                "raw": raw,
-                "layers": []
-            }
+            self.config["sceneprotos"][scene] = {"raw": raw, "layers": []}
             self.dump_config()
             os.mkdir(f"src/SceneProtos/{scene}")
 
             Updater(
-                [".messenger/sceneproto/Init.elm"],
+                [".messenger/scene/Init.elm"],
                 [f"src/SceneProtos/{scene}/Init.elm"],
-            ).rep(scene)
+            ).rep("SceneProtos").rep(scene)
             if raw:
                 Updater(
                     [".messenger/sceneproto/Raw/Model.elm"],
@@ -103,6 +100,11 @@ class Messenger:
             self.config["scenes"][scene] = []
             self.dump_config()
             os.mkdir(f"src/Scenes/{scene}")
+            if init:
+                Updater(
+                    [".messenger/scene/Init.elm"],
+                    [f"src/Scenes/{scene}/Init.elm"],
+                ).rep("Scenes").rep(scene)
             if raw:
                 Updater(
                     [".messenger/scene/Raw/Model.elm"],
@@ -129,7 +131,7 @@ class Messenger:
             "\n".join([f"import Scenes.{l}.Model as {l}" for l in scenes])
         ).rep(",\n".join([f'( "{l}", {l}.scene )' for l in scenes]))
 
-    def add_component(self, name: str, scene: str, dir: str, is_proto: bool):
+    def add_component(self, name: str, scene: str, dir: str, is_proto: bool, init: bool):
         """
         Add a component
         """
@@ -158,6 +160,12 @@ class Messenger:
                     f"src/SceneProtos/{scene}/{dir}/{name}/Model.elm",
                 ],
             ).rep("SceneProtos").rep(scene).rep(dir).rep(name)
+
+            if init:
+                Updater(
+                    [".messenger/component/Init.elm"],
+                    [f"src/SceneProtos/{scene}/{dir}/{name}/Init.elm"],
+                ).rep("SceneProtos").rep(scene).rep(dir).rep(name)
         else:
             if scene not in self.config["scenes"]:
                 raise Exception("Scene doesn't exist.")
@@ -184,10 +192,24 @@ class Messenger:
                 ],
             ).rep("Scenes").rep(scene).rep(dir).rep(name)
 
+            if init:
+                Updater(
+                    [".messenger/component/Init.elm"],
+                    [f"src/Scenes/{scene}/{dir}/{name}/Init.elm"],
+                ).rep("Scenes").rep(scene).rep(dir).rep(name)
+
     def format(self):
         os.system("elm-format src/ --yes")
 
-    def add_layer(self, scene: str, layer: str, has_component: bool, is_proto: bool, dir: str):
+    def add_layer(
+        self,
+        scene: str,
+        layer: str,
+        has_component: bool,
+        is_proto: bool,
+        dir: str,
+        init: bool,
+    ):
         """
         Add a layer to a scene
         """
@@ -203,6 +225,11 @@ class Messenger:
             self.config["sceneprotos"][scene]["layers"].append(layer)
             self.dump_config()
             os.mkdir(f"src/SceneProtos/{scene}/{layer}")
+            if init:
+                Updater(
+                    [".messenger/layer/Init.elm"],
+                    [f"src/SceneProtos/{scene}/{layer}/Init.elm"],
+                ).rep("SceneProtos").rep(scene).rep(layer)
             if has_component:
                 Updater(
                     [
@@ -233,6 +260,11 @@ class Messenger:
             self.config["scenes"][scene]["layers"].append(layer)
             self.dump_config()
             os.mkdir(f"src/Scenes/{scene}/{layer}")
+            if init:
+                Updater(
+                    [".messenger/layer/Init.elm"],
+                    [f"src/Scenes/{scene}/{layer}/Init.elm"],
+                ).rep("Scenes").rep(scene).rep(layer)
             if has_component:
                 Updater(
                     [
@@ -331,6 +363,7 @@ def component(
     is_proto: bool = typer.Option(
         False, "--proto", "-p", help="Create layer in sceneproto"
     ),
+    init: bool = typer.Option(False, "--init", "-i", help="Create a `Init.elm` file"),
 ):
     name = check_name(name)
     scene = check_name(scene)
@@ -339,7 +372,7 @@ def component(
     input(
         f"You are going to create a component named {name} in {'SceneProtos' if is_proto else 'Scenes'}/{scene}/{compdir}, continue?"
     )
-    msg.add_component(name, scene, compdir, is_proto)
+    msg.add_component(name, scene, compdir, is_proto, init)
     msg.format()
     print("Done!")
 
@@ -360,13 +393,14 @@ def scene(
     is_proto: bool = typer.Option(
         False, "--proto", "-p", help="Create layer in sceneproto"
     ),
+    init: bool = typer.Option(False, "--init", "-i", help="Create a `Init.elm` file"),
 ):
     name = check_name(name)
     msg = Messenger()
     input(
         f"You are going to create a {'raw ' if raw else ''}{'sceneproto' if is_proto else 'scene'} named {name}, continue?"
     )
-    msg.add_scene(name, raw, is_proto)
+    msg.add_scene(name, raw, is_proto, init)
     msg.update_scenes()
     msg.format()
     print("Done!")
@@ -397,6 +431,7 @@ def layer(
     is_proto: bool = typer.Option(
         False, "--proto", "-p", help="Create layer in sceneproto"
     ),
+    init: bool = typer.Option(False, "--init", "-i", help="Create a `Init.elm` file"),
 ):
     scene = check_name(scene)
     layer = check_name(layer)
@@ -404,7 +439,7 @@ def layer(
     input(
         f"You are going to create a layer named {layer} under {'sceneproto' if is_proto else 'scene'} {scene}, continue?"
     )
-    msg.add_layer(scene, layer, has_component, is_proto, compdir)
+    msg.add_layer(scene, layer, has_component, is_proto, compdir, init)
     msg.format()
     print("Done!")
 

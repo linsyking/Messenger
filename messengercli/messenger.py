@@ -87,17 +87,17 @@ class Messenger:
                 Updater(
                     [
                         ".messenger/sceneproto/Layered/Model.elm",
-                        ".messenger/sceneproto/LayerBase.elm",
+                        ".messenger/sceneproto/SceneBase.elm",
                     ],
                     [
                         f"src/SceneProtos/{scene}/Model.elm",
-                        f"src/SceneProtos/{scene}/LayerBase.elm",
+                        f"src/SceneProtos/{scene}/SceneBase.elm",
                     ],
                 ).rep(scene)
         else:
             if scene in self.config["scenes"]:
                 raise Exception("Scene already exists.")
-            self.config["scenes"][scene] = []
+            self.config["scenes"][scene] = {"layers": []}
             self.dump_config()
             os.mkdir(f"src/Scenes/{scene}")
             if init:
@@ -114,11 +114,11 @@ class Messenger:
                 Updater(
                     [
                         ".messenger/scene/Layered/Model.elm",
-                        ".messenger/scene/LayerBase.elm",
+                        ".messenger/scene/SceneBase.elm",
                     ],
                     [
                         f"src/Scenes/{scene}/Model.elm",
-                        f"src/Scenes/{scene}/LayerBase.elm",
+                        f"src/Scenes/{scene}/SceneBase.elm",
                     ],
                 ).rep(scene)
 
@@ -131,7 +131,9 @@ class Messenger:
             "\n".join([f"import Scenes.{l}.Model as {l}" for l in scenes])
         ).rep(",\n".join([f'( "{l}", {l}.scene )' for l in scenes]))
 
-    def add_component(self, name: str, scene: str, dir: str, is_proto: bool, init: bool):
+    def add_component(
+        self, name: str, scene: str, dir: str, is_proto: bool, init: bool
+    ):
         """
         Add a component
         """
@@ -144,6 +146,12 @@ class Messenger:
 
             if not os.path.exists(f"src/SceneProtos/{scene}/{dir}"):
                 os.mkdir(f"src/SceneProtos/{scene}/{dir}")
+
+            if not os.path.exists(f"src/SceneProtos/{scene}/SceneBase.elm"):
+                Updater(
+                    [".messenger/sceneproto/SceneBase.elm"],
+                    [f"src/SceneProtos/{scene}/SceneBase.elm"],
+                ).rep(scene)
 
             if not os.path.exists(f"src/SceneProtos/{scene}/{dir}/ComponentBase.elm"):
                 Updater(
@@ -182,6 +190,11 @@ class Messenger:
                     [f"src/Scenes/{scene}/{dir}/ComponentBase.elm"],
                 ).rep("Scenes").rep(scene).rep(dir)
 
+            if not os.path.exists(f"src/Scenes/{scene}/SceneBase.elm"):
+                Updater(
+                    [".messenger/scene/SceneBase.elm"],
+                    [f"src/Scenes/{scene}/SceneBase.elm"],
+                ).rep(scene)
             os.makedirs(f"src/Scenes/{scene}/{dir}/{name}", exist_ok=True)
             Updater(
                 [
@@ -216,12 +229,18 @@ class Messenger:
         if is_proto:
             if scene not in self.config["sceneprotos"]:
                 raise Exception("Scene doesn't exist.")
-            if layer in self.config["sceneprotos"][scene]:
+            if layer in self.config["sceneprotos"][scene]["layers"]:
                 raise Exception("Layer already exists.")
             if has_component and not os.path.exists(
                 f"src/SceneProtos/{scene}/{dir}/ComponentBase.elm"
             ):
                 raise Exception("Please first create a component.")
+
+            if not os.path.exists(f"src/SceneProtos/{scene}/SceneBase.elm"):
+                Updater(
+                    [".messenger/sceneproto/SceneBase.elm"],
+                    [f"src/SceneProtos/{scene}/SceneBase.elm"],
+                ).rep(scene)
             self.config["sceneprotos"][scene]["layers"].append(layer)
             self.dump_config()
             os.mkdir(f"src/SceneProtos/{scene}/{layer}")
@@ -251,12 +270,18 @@ class Messenger:
         else:
             if scene not in self.config["scenes"]:
                 raise Exception("Scene doesn't exist.")
-            if layer in self.config["scenes"][scene]:
+            if layer in self.config["scenes"][scene]["layers"]:
                 raise Exception("Layer already exists.")
             if has_component and not os.path.exists(
                 f"src/Scenes/{scene}/{dir}/ComponentBase.elm"
             ):
                 raise Exception("Please first create a component.")
+
+            if not os.path.exists(f"src/Scenes/{scene}/SceneBase.elm"):
+                Updater(
+                    [".messenger/scene/SceneBase.elm"],
+                    [f"src/Scenes/{scene}/SceneBase.elm"],
+                ).rep(scene)
             self.config["scenes"][scene]["layers"].append(layer)
             self.dump_config()
             os.mkdir(f"src/Scenes/{scene}/{layer}")
@@ -407,11 +432,13 @@ def scene(
 
 
 @app.command()
-def level(name: str, sceneproto: str):
+def level(sceneproto: str, name: str):
     name = check_name(name)
     sceneproto = check_name(sceneproto)
     msg = Messenger()
-    input(f"You are going to create a level named {name} in {sceneproto}, continue?")
+    input(
+        f"You are going to create a level named {name} from sceneproto {sceneproto}, continue?"
+    )
     msg.add_level(name, sceneproto)
     msg.update_scenes()
     msg.format()

@@ -386,7 +386,7 @@ def component(
         "Components", "--cdir", "-cd", help="Directory to store components"
     ),
     is_proto: bool = typer.Option(
-        False, "--proto", "-p", help="Create layer in sceneproto"
+        False, "--proto", "-p", help="Create a component in sceneproto"
     ),
     init: bool = typer.Option(False, "--init", "-i", help="Create a `Init.elm` file"),
 ):
@@ -416,7 +416,7 @@ def scene(
     name: str,
     raw: bool = typer.Option(False, "--raw", help="Use raw scene without layers"),
     is_proto: bool = typer.Option(
-        False, "--proto", "-p", help="Create layer in sceneproto"
+        False, "--proto", "-p", help="Create a sceneproto"
     ),
     init: bool = typer.Option(False, "--init", "-i", help="Create a `Init.elm` file"),
 ):
@@ -456,7 +456,7 @@ def layer(
         "Components", "--cdir", "-cd", help="Directory of components in the scene"
     ),
     is_proto: bool = typer.Option(
-        False, "--proto", "-p", help="Create layer in sceneproto"
+        False, "--proto", "-p", help="Create a layer in sceneproto"
     ),
     init: bool = typer.Option(False, "--init", "-i", help="Create a `Init.elm` file"),
 ):

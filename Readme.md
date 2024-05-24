@@ -15,10 +15,7 @@ Messenger is a 2D game engine with experimental concepts for Elm based on **[can
 
 ## Conceptual Picture
 
-![](docs/imgs/concept.png)
-
-- Red arrow: messages that are sent positively
-- Orange arrow: messages that are triggered passively
+![](docs/concept.png)
 
 ## Tutorial/Guide
 

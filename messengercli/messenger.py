@@ -234,7 +234,10 @@ class Messenger:
             if has_component and not os.path.exists(
                 f"src/SceneProtos/{scene}/{dir}/ComponentBase.elm"
             ):
-                raise Exception("Please first create a component.")
+                Updater(
+                    [".messenger/component/ComponentBase.elm"],
+                    [f"src/SceneProtos/{scene}/{dir}/ComponentBase.elm"],
+                ).rep("SceneProtos").rep(scene).rep(dir)
 
             if not os.path.exists(f"src/SceneProtos/{scene}/SceneBase.elm"):
                 Updater(
@@ -275,7 +278,10 @@ class Messenger:
             if has_component and not os.path.exists(
                 f"src/Scenes/{scene}/{dir}/ComponentBase.elm"
             ):
-                raise Exception("Please first create a component.")
+                Updater(
+                    [".messenger/component/ComponentBase.elm"],
+                    [f"src/Scenes/{scene}/{dir}/ComponentBase.elm"],
+                ).rep("Scenes").rep(scene).rep(dir)
 
             if not os.path.exists(f"src/Scenes/{scene}/SceneBase.elm"):
                 Updater(
@@ -403,21 +409,10 @@ def component(
 
 
 @app.command()
-def update():
-    msg = Messenger()
-    input(f"You are going to regenerate elm files based on settings, continue?")
-    msg.update_scenes()
-    msg.format()
-    print("Done!")
-
-
-@app.command()
 def scene(
     name: str,
     raw: bool = typer.Option(False, "--raw", help="Use raw scene without layers"),
-    is_proto: bool = typer.Option(
-        False, "--proto", "-p", help="Create a sceneproto"
-    ),
+    is_proto: bool = typer.Option(False, "--proto", "-p", help="Create a sceneproto"),
     init: bool = typer.Option(False, "--init", "-i", help="Create a `Init.elm` file"),
 ):
     name = check_name(name)

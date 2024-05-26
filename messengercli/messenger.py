@@ -339,7 +339,7 @@ def init(
         None,
         "--template-tag",
         "-b",
-        help="Use the tag or branch of the repository to clone",
+        help="Use the tag or branch of the repository to clone.",
     ),
 ):
     input(
@@ -389,12 +389,12 @@ def component(
     scene: str,
     name: str,
     compdir: str = typer.Option(
-        "Components", "--cdir", "-cd", help="Directory to store components"
+        "Components", "--cdir", "-cd", help="Directory to store components."
     ),
     is_proto: bool = typer.Option(
-        False, "--proto", "-p", help="Create a component in sceneproto"
+        False, "--proto", "-p", help="Create a component in sceneproto."
     ),
-    init: bool = typer.Option(False, "--init", "-i", help="Create a `Init.elm` file"),
+    init: bool = typer.Option(False, "--init", "-i", help="Create a `Init.elm` file."),
 ):
     name = check_name(name)
     scene = check_name(scene)
@@ -411,9 +411,9 @@ def component(
 @app.command()
 def scene(
     name: str,
-    raw: bool = typer.Option(False, "--raw", help="Use raw scene without layers"),
-    is_proto: bool = typer.Option(False, "--proto", "-p", help="Create a sceneproto"),
-    init: bool = typer.Option(False, "--init", "-i", help="Create a `Init.elm` file"),
+    raw: bool = typer.Option(False, "--raw", help="Use raw scene without layers."),
+    is_proto: bool = typer.Option(False, "--proto", "-p", help="Create a sceneproto."),
+    init: bool = typer.Option(False, "--init", "-i", help="Create a `Init.elm` file."),
 ):
     name = check_name(name)
     msg = Messenger()
@@ -445,15 +445,15 @@ def layer(
     scene: str,
     layer: str,
     has_component: bool = typer.Option(
-        False, "--with-component", "-c", help="Use components in this layer"
+        False, "--with-component", "-c", help="Use components in this layer."
     ),
     compdir: str = typer.Option(
-        "Components", "--cdir", "-cd", help="Directory of components in the scene"
+        "Components", "--cdir", "-cd", help="Directory of components in the scene."
     ),
     is_proto: bool = typer.Option(
-        False, "--proto", "-p", help="Create a layer in sceneproto"
+        False, "--proto", "-p", help="Create a layer in sceneproto."
     ),
-    init: bool = typer.Option(False, "--init", "-i", help="Create a `Init.elm` file"),
+    init: bool = typer.Option(False, "--init", "-i", help="Create a `Init.elm` file."),
 ):
     scene = check_name(scene)
     layer = check_name(layer)

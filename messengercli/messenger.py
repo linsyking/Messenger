@@ -234,6 +234,7 @@ class Messenger:
             if has_component and not os.path.exists(
                 f"src/SceneProtos/{scene}/{dir}/ComponentBase.elm"
             ):
+                os.makedirs(f"src/SceneProtos/{scene}/{dir}", exist_ok=True)
                 Updater(
                     [".messenger/component/ComponentBase.elm"],
                     [f"src/SceneProtos/{scene}/{dir}/ComponentBase.elm"],
@@ -278,6 +279,7 @@ class Messenger:
             if has_component and not os.path.exists(
                 f"src/Scenes/{scene}/{dir}/ComponentBase.elm"
             ):
+                os.makedirs(f"src/Scenes/{scene}/{dir}", exist_ok=True)
                 Updater(
                     [".messenger/component/ComponentBase.elm"],
                     [f"src/Scenes/{scene}/{dir}/ComponentBase.elm"],

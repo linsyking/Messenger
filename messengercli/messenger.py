@@ -70,7 +70,7 @@ class Messenger:
                 os.mkdir(f"src/SceneProtos")
             if scene in self.config["sceneprotos"]:
                 raise Exception("Sceneproto already exists.")
-            self.config["sceneprotos"][scene] = {"raw": raw, "layers": []}
+            self.config["sceneprotos"][scene] = {"raw": raw, "components": {}, "layers": []}
             self.dump_config()
             os.mkdir(f"src/SceneProtos/{scene}")
 
@@ -97,7 +97,7 @@ class Messenger:
         else:
             if scene in self.config["scenes"]:
                 raise Exception("Scene already exists.")
-            self.config["scenes"][scene] = {"layers": []}
+            self.config["scenes"][scene] = {"components": {}, "layers": []}
             self.dump_config()
             os.mkdir(f"src/Scenes/{scene}")
             if init:
@@ -146,6 +146,7 @@ class Messenger:
 
             if not os.path.exists(f"src/SceneProtos/{scene}/{dir}"):
                 os.mkdir(f"src/SceneProtos/{scene}/{dir}")
+                self.config["sceneprotos"][scene]["components"][dir] = []
 
             if not os.path.exists(f"src/SceneProtos/{scene}/SceneBase.elm"):
                 Updater(
@@ -159,6 +160,8 @@ class Messenger:
                     [f"src/SceneProtos/{scene}/{dir}/ComponentBase.elm"],
                 ).rep("SceneProtos").rep(scene).rep(dir)
 
+            self.config["sceneprotos"][scene]["components"][dir].append(name)
+            self.dump_config()
             os.makedirs(f"src/SceneProtos/{scene}/{dir}/{name}", exist_ok=True)
             Updater(
                 [
@@ -183,6 +186,7 @@ class Messenger:
 
             if not os.path.exists(f"src/Scenes/{scene}/{dir}"):
                 os.mkdir(f"src/Scenes/{scene}/{dir}")
+                self.config["scenes"][scene]["components"][dir] = []
 
             if not os.path.exists(f"src/Scenes/{scene}/{dir}/ComponentBase.elm"):
                 Updater(
@@ -195,6 +199,9 @@ class Messenger:
                     [".messenger/scene/SceneBase.elm"],
                     [f"src/Scenes/{scene}/SceneBase.elm"],
                 ).rep(scene)
+
+            self.config["scenes"][scene]["components"][dir].append(name)
+            self.dump_config()
             os.makedirs(f"src/Scenes/{scene}/{dir}/{name}", exist_ok=True)
             Updater(
                 [

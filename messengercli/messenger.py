@@ -38,6 +38,47 @@ class Messenger:
         with open("messenger.json", "w") as f:
             json.dump(self.config, f, indent=4, ensure_ascii=False)
 
+    def update_config(self):
+        self.config["libs"] = []
+        self.config["scenes"] = {}
+        self.config["sceneprotos"] = {}
+
+        libDir = "src/Lib"
+        sceneDir = "src/Scenes"
+        sceneProtoDir = "src/SceneProtos"
+        for lib in os.listdir(libDir):
+            if os.path.isdir(os.path.join(libDir, lib)):
+                self.config["libs"].append(lib)
+        self.__update_scene(sceneDir, False)
+        if os.path.exists(sceneProtoDir):
+            self.__update_scene(sceneProtoDir, True)
+        self.dump_config()        
+
+    def __update_scene(self, sceneDir: str, isProto: bool):
+        field = "sceneprotos" if isProto else "scenes"
+        initScene = lambda x: {"raw": x, "components": {}, "layers": []} if isProto else {"components": {}, "layers": []}
+        for sceneName in os.listdir(sceneDir):
+            if os.path.isdir(os.path.join(sceneDir, sceneName)):
+                scene = os.path.join(sceneDir, sceneName)
+                if os.path.exists(os.path.join(scene, "Model.elm")):
+                    with open(os.path.join(scene, "Model.elm"), "r") as f:
+                        raw = "genRawScene" in f.read() 
+                else:
+                    continue
+                if isProto or raw or os.path.exists(os.path.join(scene, "SceneBase.elm")):
+                    self.config[field][sceneName] = initScene(raw)
+                    for sceneObj in os.listdir(scene):
+                        if os.path.exists(os.path.join(scene, sceneObj, "ComponentBase.elm")):
+                            componentDir = os.path.join(scene, sceneObj)
+                            self.config[field][sceneName]["components"][sceneObj] = []
+                            for component in os.listdir(componentDir):
+                                if os.path.isdir(os.path.join(componentDir, component)):
+                                    self.config[field][sceneName]["components"][sceneObj].append(component)
+                        elif os.path.isdir(os.path.join(scene, sceneObj)):
+                            self.config[field][sceneName]["layers"].append(sceneObj)                            
+                else:
+                    self.config[field][sceneName] = []
+
     def add_level(self, name: str, sceneproto: str):
         """
         Add a level
@@ -474,6 +515,15 @@ def layer(
     msg.format()
     print("Done!")
 
+@app.command()
+def update():
+    msg = Messenger()
+    input(
+        f"You are going to update messenger.json according to your project, continue?"
+    )
+    msg.update_config()
+    msg.format()
+    print("Done!")
 
 if __name__ == "__main__":
     app()

@@ -7,7 +7,7 @@ import json
 from .updater import Updater
 
 app = typer.Typer(add_completion=False, help="Messenger CLI")
-API_VERSION = "1.0.0"
+API_VERSION = "1.1.0"
 
 
 class Messenger:

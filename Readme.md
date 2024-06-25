@@ -2,6 +2,8 @@
 
 Messenger is a 2D game engine with experimental concepts for Elm based on **[canvas](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API)**.
 
+This repository is a CLI tool to create messenger project. Main development is under [messenger-core](https://github.com/linsyking/Messenger-core).
+
 ## Games made with Messenger
 
 - [Reweave](https://github.com/linsyking/Reweave)
@@ -18,5 +20,7 @@ Messenger is a 2D game engine with experimental concepts for Elm based on **[can
 ![](docs/concept.png)
 
 ## Tutorial/Guide
+
+The manual is under development, and may have some clarity issues now.
 
 [Full documentation](https://typst.app/project/rytMGqODAPcw9-39Fec_aB) is hosted on Typst.

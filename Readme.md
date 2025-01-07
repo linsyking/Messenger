@@ -21,6 +21,4 @@ This repository is a CLI tool to create messenger project. Main development is u
 
 ## Tutorial/Guide
 
-The manual is under development, and may have some clarity issues now.
-
-[Full documentation](https://typst.app/project/rytMGqODAPcw9-39Fec_aB) is hosted on Typst.
+https://elm-messenger.netlify.app/

@@ -11,6 +11,7 @@ API_VERSION = "1.2.0"
 
 SCENE_DIR = "src/Scenes"
 SCENEPROTO_DIR = "src/SceneProtos"
+GC_DIR = "src/GlobalComponents"
 
 
 class Messenger:
@@ -58,11 +59,7 @@ class Messenger:
 
     def __update_scene(self, sceneDir: str, isProto: bool):
         field = "sceneprotos" if isProto else "scenes"
-        initScene = lambda x: (
-            {"raw": x}
-            if isProto
-            else {}
-        )
+        initScene = lambda x: ({"raw": x} if isProto else {})
         for sceneName in os.listdir(sceneDir):
             if os.path.isdir(os.path.join(sceneDir, sceneName)):
                 scene = os.path.join(sceneDir, sceneName)
@@ -90,7 +87,7 @@ class Messenger:
             raise Exception("Level or scene already exists.")
         self.config["scenes"][name] = {
             "sceneproto": sceneproto,
-            "raw": self.config["sceneprotos"][sceneproto]["raw"]
+            "raw": self.config["sceneprotos"][sceneproto]["raw"],
         }
         self.dump_config()
         os.mkdir(f"{SCENE_DIR}/{name}")
@@ -182,6 +179,18 @@ class Messenger:
         Updater([".messenger/scene/AllScenes.elm"], [f"{SCENE_DIR}/AllScenes.elm"]).rep(
             "\n".join([f"import Scenes.{l}.Model as {l}" for l in scenes])
         ).rep(",\n".join([f'( "{l}", {l}.scene )' for l in scenes]))
+
+    def add_gc(self, name: str):
+        if not os.path.exists(GC_DIR):
+            os.mkdir(GC_DIR)
+        os.makedirs(f"{GC_DIR}/{name}", exist_ok=True)
+        if not os.path.exists(f"{GC_DIR}/{name}/Model.elm"):
+            Updater(
+                [".messenger/component/GlobalComponent/Model.elm"],
+                [f"{GC_DIR}/{name}/Model.elm"],
+            ).rep(name)
+        else:
+            raise Exception("Global component already exists.")
 
     def add_component(
         self, name: str, scene: str, dir: str, is_proto: bool, init: bool
@@ -396,12 +405,12 @@ def init(
         "-b",
         help="Use the tag or branch of the repository to clone.",
     ),
-    use_cdn : bool =typer.Option(
+    use_cdn: bool = typer.Option(
         False,
         "--use-cdn",
         help="Use jsdelivr CDN for elm-regl JS file.",
     ),
-    minimal : bool =typer.Option(
+    minimal: bool = typer.Option(
         False,
         "--min",
         help="Use minimal regl JS that has no builtin font.",
@@ -492,6 +501,16 @@ def component(
 
 
 @app.command()
+def gc(name: str):
+    name = check_name(name)
+    msg = Messenger()
+    input(f"You are going to create a global component named {name}, continue?")
+    msg.add_gc(name)
+    msg.format()
+    print("Done!")
+
+
+@app.command()
 def scene(
     name: str,
     raw: bool = typer.Option(False, "--raw", help="Use raw scene without layers."),
@@ -565,7 +584,9 @@ def remove(
     type: str,
     name: str,
     remove: bool = typer.Option(False, "--rm", help="Also remove the modules."),
-    remove_levels: bool = typer.Option(False, "--rml", help="Remove all levels in the sceneproto."),
+    remove_levels: bool = typer.Option(
+        False, "--rml", help="Remove all levels in the sceneproto."
+    ),
 ):
     name = check_name(name)
     msg = Messenger()
@@ -590,7 +611,9 @@ def remove(
                     if remove:
                         shutil.rmtree(f"{SCENE_DIR}/{level}")
             else:
-                raise Exception("There are levels using the sceneproto. Please remove them first.")
+                raise Exception(
+                    "There are levels using the sceneproto. Please remove them first."
+                )
         msg.config["sceneprotos"].pop(name)
         if remove:
             shutil.rmtree(f"{SCENEPROTO_DIR}/{name}")

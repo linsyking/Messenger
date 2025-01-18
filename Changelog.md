@@ -1,6 +1,6 @@
 # Changelog
 
-This changelog only contains changes in CLI tools of Messenger. See [Changelog](https://github.com/linsyking/messenger-templates/blob/main/Changelog.md) for changelog of Messenger templates.
+This changelog only contains changes in CLI tools of Messenger. See [Changelog](https://github.com/linsyking/messenger-core/blob/master/Changelog.md) for changelog of Messenger core.
 
 ## 0.5.0
 

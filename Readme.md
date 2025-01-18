@@ -5,19 +5,19 @@ Messenger is a 2D game engine with experimental concepts for Elm based on **[Web
 This repository is a CLI tool to create messenger project.
 Main development is under several repositories:
 
-- Core Messenger Elm library: [messenger-core](https://github.com/linsyking/Messenger-core)
-- WebGL rendering in Elm: [elm-regl](https://github.com/linsyking/elm-regl), [elm-regl-js](https://github.com/linsyking/elm-regl-js)
-- Extra Messenger Elm library: [messenger-extra](https://github.com/linsyking/Messenger-extra)
-- Messenger templates: [messenger-templates](https://github.com/linsyking/messenger-templates)
+- Core Messenger Elm library: [messenger-core](https://github.com/elm-messenger/Messenger-core)
+- WebGL rendering in Elm: [elm-regl](https://github.com/elm-messenger/elm-regl), [elm-regl-js](https://github.com/elm-messenger/elm-regl-js)
+- Extra Messenger Elm library: [messenger-extra](https://github.com/elm-messenger/Messenger-extra)
+- Messenger templates: [messenger-templates](https://github.com/elm-messenger/messenger-templates)
 
 Other repositories related to Messenger:
 
-- Examples: [messenger-examples](https://github.com/linsyking/messenger-examples)
-- Messenger documentation: [messenger-docs](https://github.com/linsyking/messenger-docs)
+- Examples: [messenger-examples](https://github.com/elm-messenger/messenger-examples)
+- Messenger documentation: [messenger-docs](https://github.com/elm-messenger/messenger-docs)
 
 ## Games made with Messenger
 
-- [Reweave](https://github.com/linsyking/Reweave)
+- [Reweave](https://github.com/elm-messenger/Reweave)
 - [SilverFOCS Games](https://focs.ji.sjtu.edu.cn/silverfocs/project/2023/p2) (all games in 2023 are powered by Messenger)
 
 ## Cool Features

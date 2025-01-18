@@ -2,6 +2,21 @@
 
 This changelog only contains changes in CLI tools of Messenger. See [Changelog](https://github.com/linsyking/messenger-templates/blob/main/Changelog.md) for changelog of Messenger templates.
 
+## 0.5.0
+
+### Features:
+
+- `remove` command
+- Store level and sceneproto dependencies in config
+- Remove components and layers in config
+
+## 0.4.0
+
+### Features:
+
+- New config entries for components, layers
+- Update config by objects
+
 ## 0.3.3
 
 ### Fix

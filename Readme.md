@@ -9,6 +9,10 @@ Main development is under several repositories:
 - WebGL rendering in Elm: [elm-regl](https://github.com/linsyking/elm-regl), [elm-regl-js](https://github.com/linsyking/elm-regl-js)
 - Extra Messenger Elm library: [messenger-extra](https://github.com/linsyking/Messenger-extra)
 - Messenger templates: [messenger-templates](https://github.com/linsyking/messenger-templates)
+
+Other repositories related to Messenger:
+
+- Examples: [messenger-examples](https://github.com/linsyking/messenger-examples)
 - Messenger documentation: [messenger-docs](https://github.com/linsyking/messenger-docs)
 
 ## Games made with Messenger

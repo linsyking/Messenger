@@ -435,18 +435,18 @@ Press Enter to continue
     else:
         os.system(f"git clone {template_repo} .messenger --depth=1")
     shutil.copytree(".messenger/src/", "./src")
-    shutil.copytree(".messenger/public/", "./public")
+    os.makedirs("public", exist_ok=True)
     shutil.copy(".messenger/public/elm-audio.js", "./public/elm-audio.js")
     shutil.copy(".messenger/public/elm-messenger.js", "./public/elm-messenger.js")
     shutil.copy(".messenger/public/style.css", "./public/style.css")
-    if use_cdn:
-        if minimal:
+    if use_cdn == True: # Cannot directly use `if use_cdn`
+        if minimal == True:
             shutil.copy(".messenger/public/index.min.html", "./public/index.html")
         else:
             shutil.copy(".messenger/public/index.html", "./public/index.html")
     else:
         shutil.copy(".messenger/public/index.local.html", "./public/index.html")
-        if minimal:
+        if minimal == True:
             shutil.copy(".messenger/public/regl.min.js", "./public/regl.js")
         else:
             shutil.copy(".messenger/public/regl.js", "./public/regl.js")

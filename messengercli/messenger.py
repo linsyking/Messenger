@@ -7,7 +7,7 @@ import json
 from .updater import Updater
 
 app = typer.Typer(add_completion=False, help="Messenger CLI")
-API_VERSION = "1.1.0"
+API_VERSION = "1.2.0"
 
 SCENE_DIR = "src/Scenes"
 SCENEPROTO_DIR = "src/SceneProtos"
@@ -35,7 +35,13 @@ class Messenger:
             )
         if not os.path.exists(".messenger"):
             print("Messenger files not found. Initializing...")
-            os.system(f"git clone {self.config['template_repo']} .messenger --depth=1")
+            repo = self.config["template_repo"]
+            if repo["tag"] == "":
+                os.system(f"git clone {repo["url"]} .messenger --depth=1")
+            else:
+                os.system(
+                    f"git clone -b {repo["tag"]} {repo["url"]} .messenger --depth=1"
+                )
 
     def dump_config(self):
         with open("messenger.json", "w") as f:
@@ -53,9 +59,9 @@ class Messenger:
     def __update_scene(self, sceneDir: str, isProto: bool):
         field = "sceneprotos" if isProto else "scenes"
         initScene = lambda x: (
-            {"raw": x, "components": {}, "layers": []}
+            {"raw": x}
             if isProto
-            else {"components": {}, "layers": []}
+            else {}
         )
         for sceneName in os.listdir(sceneDir):
             if os.path.isdir(os.path.join(sceneDir, sceneName)):
@@ -71,19 +77,6 @@ class Messenger:
                     or os.path.exists(os.path.join(scene, "SceneBase.elm"))
                 ):
                     self.config[field][sceneName] = initScene(raw)
-                    for sceneObj in os.listdir(scene):
-                        if os.path.exists(
-                            os.path.join(scene, sceneObj, "ComponentBase.elm")
-                        ):
-                            componentDir = os.path.join(scene, sceneObj)
-                            self.config[field][sceneName]["components"][sceneObj] = []
-                            for component in os.listdir(componentDir):
-                                if os.path.isdir(os.path.join(componentDir, component)):
-                                    self.config[field][sceneName]["components"][
-                                        sceneObj
-                                    ].append(component)
-                        elif os.path.isdir(os.path.join(scene, sceneObj)):
-                            self.config[field][sceneName]["layers"].append(sceneObj)
                 else:
                     self.config[field][sceneName] = []
 
@@ -95,9 +88,14 @@ class Messenger:
             raise Exception("Sceneproto doesn't exist.")
         if name in self.config["scenes"]:
             raise Exception("Level or scene already exists.")
-        self.config["scenes"][name] = []
+        self.config["scenes"][name] = {
+            "sceneproto": sceneproto,
+            "raw": self.config["sceneprotos"][sceneproto]["raw"]
+        }
         self.dump_config()
         os.mkdir(f"{SCENE_DIR}/{name}")
+        self.config["sceneprotos"][sceneproto]["levels"].append(name)
+        self.dump_config()
         raw = self.config["sceneprotos"][sceneproto]["raw"]
         if raw:
             Updater(
@@ -121,8 +119,7 @@ class Messenger:
                 raise Exception("Sceneproto already exists.")
             self.config["sceneprotos"][scene] = {
                 "raw": raw,
-                "components": {},
-                "layers": [],
+                "levels": [],
             }
             self.dump_config()
             os.mkdir(f"{SCENEPROTO_DIR}/{scene}")
@@ -150,7 +147,9 @@ class Messenger:
         else:
             if scene in self.config["scenes"]:
                 raise Exception("Scene already exists.")
-            self.config["scenes"][scene] = {"components": {}, "layers": []}
+            self.config["scenes"][scene] = {
+                "raw": raw,
+            }
             self.dump_config()
             os.mkdir(f"{SCENE_DIR}/{scene}")
             if init:
@@ -199,7 +198,6 @@ class Messenger:
 
             if not os.path.exists(f"{SCENEPROTO_DIR}/{scene}/{dir}"):
                 os.mkdir(f"{SCENEPROTO_DIR}/{scene}/{dir}")
-                self.config["sceneprotos"][scene]["components"][dir] = []
 
             if not os.path.exists(f"{SCENEPROTO_DIR}/{scene}/SceneBase.elm"):
                 Updater(
@@ -213,7 +211,6 @@ class Messenger:
                     [f"{SCENEPROTO_DIR}/{scene}/{dir}/ComponentBase.elm"],
                 ).rep("SceneProtos").rep(scene).rep(dir)
 
-            self.config["sceneprotos"][scene]["components"][dir].append(name)
             self.dump_config()
             os.makedirs(f"{SCENEPROTO_DIR}/{scene}/{dir}/{name}", exist_ok=True)
             Updater(
@@ -239,7 +236,6 @@ class Messenger:
 
             if not os.path.exists(f"{SCENE_DIR}/{scene}/{dir}"):
                 os.mkdir(f"{SCENE_DIR}/{scene}/{dir}")
-                self.config["scenes"][scene]["components"][dir] = []
 
             if not os.path.exists(f"{SCENE_DIR}/{scene}/{dir}/ComponentBase.elm"):
                 Updater(
@@ -253,7 +249,6 @@ class Messenger:
                     [f"{SCENE_DIR}/{scene}/SceneBase.elm"],
                 ).rep(scene)
 
-            self.config["scenes"][scene]["components"][dir].append(name)
             self.dump_config()
             os.makedirs(f"{SCENE_DIR}/{scene}/{dir}/{name}", exist_ok=True)
             Updater(
@@ -289,13 +284,12 @@ class Messenger:
         if is_proto:
             if scene not in self.config["sceneprotos"]:
                 raise Exception("Scene doesn't exist.")
-            if layer in self.config["sceneprotos"][scene]["layers"]:
+            if os.path.exists(f"{SCENEPROTO_DIR}/{scene}/{layer}"):
                 raise Exception("Layer already exists.")
             if has_component and not os.path.exists(
                 f"{SCENEPROTO_DIR}/{scene}/{dir}/ComponentBase.elm"
             ):
                 os.makedirs(f"{SCENEPROTO_DIR}/{scene}/{dir}", exist_ok=True)
-                self.config["sceneprotos"][scene]["components"][dir] = []
                 Updater(
                     [".messenger/component/ComponentBase.elm"],
                     [f"{SCENEPROTO_DIR}/{scene}/{dir}/ComponentBase.elm"],
@@ -306,7 +300,6 @@ class Messenger:
                     [".messenger/sceneproto/SceneBase.elm"],
                     [f"{SCENEPROTO_DIR}/{scene}/SceneBase.elm"],
                 ).rep(scene)
-            self.config["sceneprotos"][scene]["layers"].append(layer)
             self.dump_config()
             os.mkdir(f"{SCENEPROTO_DIR}/{scene}/{layer}")
             if init:
@@ -335,13 +328,12 @@ class Messenger:
         else:
             if scene not in self.config["scenes"]:
                 raise Exception("Scene doesn't exist.")
-            if layer in self.config["scenes"][scene]["layers"]:
+            if os.path.exists(f"{SCENE_DIR}/{scene}/{layer}"):
                 raise Exception("Layer already exists.")
             if has_component and not os.path.exists(
                 f"{SCENE_DIR}/{scene}/{dir}/ComponentBase.elm"
             ):
                 os.makedirs(f"{SCENE_DIR}/{scene}/{dir}", exist_ok=True)
-                self.config["scenes"][scene]["components"][dir] = []
                 Updater(
                     [".messenger/component/ComponentBase.elm"],
                     [f"{SCENE_DIR}/{scene}/{dir}/ComponentBase.elm"],
@@ -352,7 +344,6 @@ class Messenger:
                     [".messenger/scene/SceneBase.elm"],
                     [f"{SCENE_DIR}/{scene}/SceneBase.elm"],
                 ).rep(scene)
-            self.config["scenes"][scene]["layers"].append(layer)
             self.dump_config()
             os.mkdir(f"{SCENE_DIR}/{scene}/{layer}")
             if init:
@@ -405,12 +396,12 @@ def init(
         "-b",
         help="Use the tag or branch of the repository to clone.",
     ),
-    use_cdn=typer.Option(
+    use_cdn : bool =typer.Option(
         False,
         "--use-cdn",
         help="Use jsdelivr CDN for elm-regl JS file.",
     ),
-    minimal=typer.Option(
+    minimal : bool =typer.Option(
         False,
         "--min",
         help="Use minimal regl JS that has no builtin font.",
@@ -433,20 +424,21 @@ Press Enter to continue
     if template_tag:
         os.system(f"git clone -b {template_tag} {template_repo} .messenger --depth=1")
     else:
+        template_tag = ""
         os.system(f"git clone {template_repo} .messenger --depth=1")
     shutil.copytree(".messenger/src/", "./src")
     os.makedirs("public", exist_ok=True)
     shutil.copy(".messenger/public/elm-audio.js", "./public/elm-audio.js")
     shutil.copy(".messenger/public/elm-messenger.js", "./public/elm-messenger.js")
     shutil.copy(".messenger/public/style.css", "./public/style.css")
-    if use_cdn == True: # Cannot directly use `if use_cdn`
-        if minimal == True:
+    if use_cdn:
+        if minimal:
             shutil.copy(".messenger/public/index.min.html", "./public/index.html")
         else:
             shutil.copy(".messenger/public/index.html", "./public/index.html")
     else:
         shutil.copy(".messenger/public/index.local.html", "./public/index.html")
-        if minimal == True:
+        if minimal:
             shutil.copy(".messenger/public/regl.min.js", "./public/regl.js")
         else:
             shutil.copy(".messenger/public/regl.js", "./public/regl.js")
@@ -460,7 +452,10 @@ Press Enter to continue
     print("Creating elm.json...")
     initObject = {
         "version": API_VERSION,
-        "template_repo": template_repo,
+        "template_repo": {
+            "url": template_repo,
+            "tag": template_tag,
+        },
         "scenes": {},
         "sceneprotos": {},
     }
@@ -563,6 +558,45 @@ def update():
     msg.update_config()
     msg.format()
     print("Done!")
+
+
+@app.command()
+def remove(
+    type: str,
+    name: str,
+    remove: bool = typer.Option(False, "--rm", help="Also remove the modules."),
+    remove_levels: bool = typer.Option(False, "--rml", help="Remove all levels in the sceneproto."),
+):
+    name = check_name(name)
+    msg = Messenger()
+    input(f"You are going to remove {name} ({type}), continue?")
+    if type == "scene":
+        if name not in msg.config["scenes"]:
+            raise Exception("Scene doesn't exist.")
+        if "sceneproto" in msg.config["scenes"][name]:
+            sp = msg.config["scenes"][name]["sceneproto"]
+            msg.config["sceneprotos"][sp]["levels"].remove(name)
+        msg.config["scenes"].pop(name)
+        msg.update_scenes()
+        if remove:
+            shutil.rmtree(f"{SCENE_DIR}/{name}")
+    elif type == "sceneproto":
+        if name not in msg.config["sceneprotos"]:
+            raise Exception("Sceneproto doesn't exist.")
+        if len(msg.config["sceneprotos"][name]["levels"]) > 0:
+            if remove_levels:
+                for level in msg.config["sceneprotos"][name]["levels"]:
+                    msg.config["scenes"].pop(level)
+                    if remove:
+                        shutil.rmtree(f"{SCENE_DIR}/{level}")
+            else:
+                raise Exception("There are levels using the sceneproto. Please remove them first.")
+        msg.config["sceneprotos"].pop(name)
+        if remove:
+            shutil.rmtree(f"{SCENEPROTO_DIR}/{name}")
+    else:
+        print("No such type.")
+    msg.dump_config()
 
 
 if __name__ == "__main__":

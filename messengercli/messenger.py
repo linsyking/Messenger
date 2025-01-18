@@ -405,10 +405,20 @@ def init(
         "-b",
         help="Use the tag or branch of the repository to clone.",
     ),
+    use_cdn=typer.Option(
+        False,
+        "--use-cdn",
+        help="Use jsdelivr CDN for elm-regl JS file.",
+    ),
+    minimal=typer.Option(
+        False,
+        "--min",
+        help="Use minimal regl JS that has no builtin font.",
+    ),
 ):
     input(
         f"""Thanks for using Messenger.
-See https://github.com/linsyking/Messenger.git for more information.
+See https://github.com/linsyking/Messenger for more information.
 Here is my plan:
 
 - Create a directory named {name}
@@ -426,6 +436,20 @@ Press Enter to continue
         os.system(f"git clone {template_repo} .messenger --depth=1")
     shutil.copytree(".messenger/src/", "./src")
     shutil.copytree(".messenger/public/", "./public")
+    shutil.copy(".messenger/public/elm-audio.js", "./public/elm-audio.js")
+    shutil.copy(".messenger/public/elm-messenger.js", "./public/elm-messenger.js")
+    shutil.copy(".messenger/public/style.css", "./public/style.css")
+    if use_cdn:
+        if minimal:
+            shutil.copy(".messenger/public/index.min.html", "./public/index.html")
+        else:
+            shutil.copy(".messenger/public/index.html", "./public/index.html")
+    else:
+        shutil.copy(".messenger/public/index.local.html", "./public/index.html")
+        if minimal:
+            shutil.copy(".messenger/public/regl.min.js", "./public/regl.js")
+        else:
+            shutil.copy(".messenger/public/regl.js", "./public/regl.js")
     shutil.copy(".messenger/.gitignore", "./.gitignore")
     shutil.copy(".messenger/Makefile", "./Makefile")
     shutil.copy(".messenger/elm.json", "./elm.json")
